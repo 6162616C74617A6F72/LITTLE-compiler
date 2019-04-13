@@ -1,85 +1,33 @@
-/**
- * Montana State University
- * Class: Compilers - CSCI 468
- * @author Olexandr Matveyev, Mandy Hawkins, Abdulrahman Alhitm, Michael Seeley
- */
-
-/*ANTLR4 libs import */
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
-
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.net.URL;
-import java.security.Key;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DriverSymbolTable
+/**
+ * This class is used to generate tiny code
+ */
+public class CodeGeneration
 {
-    // Path to the .micro file
-    private URL res = null;
+    // Symbol table
+    private Map<Integer, MicroSymbolTable> mst = null;
 
-    public DriverSymbolTable(URL res)
+    /**
+     * Constructor
+     * @param mst
+     */
+    public CodeGeneration(Map<Integer, MicroSymbolTable> mst)
     {
-        this.res = res;
-    }
-
-    public void run()
-    {
-        // Initializing necessary classes for parsing
-        CharStream inp = null;
-        MicroGrammarLexer lexer = null;
-        CommonTokenStream tokens = null;
-        MicroGrammarParser parser = null;
-
-        try
-        {
-            // Get input from the file directly
-            inp = CharStreams.fromStream(res.openStream());
-
-            // Initialize lexer and parser
-            lexer = new MicroGrammarLexer(inp);
-            tokens = new CommonTokenStream(lexer);
-            parser = new MicroGrammarParser(tokens);
-
-            MicroListener microListener = new MicroListener();
-
-            ParseTreeWalker parseTreeWalker = new ParseTreeWalker();
-            parseTreeWalker.walk(microListener, parser.program());
-            //new ParseTreeWalker().walk(microListener, parser.program());
-
-            // IS NOT APPLICABLE FOR THE STEP 3 BECAUSE DATA-STRUCTURE WAS MODIFIED FOR STEP 4,
-            // AS WELL AS MicroListener WAS MODIFIED FOR STEP 4.
-            // ----------------------------------------------------------------------------------- //
-            // Print symbol table for STEP 3
-            //prettyPrint(microListener.getSymbolTable());
-            // ----------------------------------------------------------------------------------- //
-
-            // Print symbol table for STEP 4
-            //print(microListener.getSymbolTable());
-
-            CodeGeneration codeGeneration = new CodeGeneration(microListener.getSymbolTable());
-            codeGeneration.demoPrint();
-            //specialPrint(microListener.getSymbolTable());
-
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+        this.mst = mst;
     }
 
     /**
-     * Print symbol table for STEP 3
-     * @param tmp: Map<Integer, MicroSymbolTable>
+     * This method is used to print each block of the source code from the symbol table,
+     * also is used to generate tiny code.
+     * Currently in the demo stage.
      */
-    private void prettyPrint(Map<Integer, MicroSymbolTable> tmp)
+    public void demoPrint()
     {
         // Check if symbol table get duplicate identifiers
         // if there are duplicate identifiers, then print and error message
-        Map<String, MicroSymbolTable> duplicates = duplicateCheck(tmp);
+        Map<String, MicroSymbolTable> duplicates = duplicateCheck(mst);
         if (duplicates != null)
         {
             for (Map.Entry<String, MicroSymbolTable> entry : duplicates.entrySet())
@@ -94,71 +42,7 @@ public class DriverSymbolTable
             // This counter used to specify where we should print extra new-line
             int countSymTable = 0;
 
-            for (Map.Entry<Integer, MicroSymbolTable> entry : tmp.entrySet())
-            {
-                String symbolTable = entry.getValue().getSymbolTableName();
-
-                String name = entry.getValue().getName();
-                String type = entry.getValue().getType();
-                String value = entry.getValue().getValue();
-
-                if (symbolTable != null)
-                {
-                    // Printing extra new-line or not
-                    if(countSymTable == 0)
-                    {
-                        System.out.printf("%s\n", symbolTable);
-                    }
-                    else if(countSymTable > 0)
-                    {
-                        System.out.printf("\n%s\n", symbolTable);
-                    }
-                    countSymTable++;
-                }
-
-                // This IF block is for STRING type because usually STRING go with some value
-                if (name != null && type != null && value != null)
-                {
-                    String str = "name " + name + " type " + type + " value " + value;
-                    System.out.printf("%s\n", str);
-                }
-
-                // This IF block is for INT and FLOAT types
-                if (name != null && type != null && value == null)
-                {
-                    String str = "name " + name + " type " + type;
-                    System.out.printf("%s\n", str);
-                }
-            }
-        }
-
-    }
-
-
-    /**
-     * Print symbol table for STEP 4
-     * @param tmp: Map<Integer, MicroSymbolTable>
-     */
-    private void print(Map<Integer, MicroSymbolTable> tmp)
-    {
-        // Check if symbol table get duplicate identifiers
-        // if there are duplicate identifiers, then print and error message
-        Map<String, MicroSymbolTable> duplicates = duplicateCheck(tmp);
-        if (duplicates != null)
-        {
-            for (Map.Entry<String, MicroSymbolTable> entry : duplicates.entrySet())
-            {
-                System.out.printf("DECLARATION ERROR %s\n", entry.getKey());
-            }
-        }
-
-        // If no duplicate identifiers print symbol table
-        if (duplicates == null)
-        {
-            // This counter used to specify where we should print extra new-line
-            int countSymTable = 0;
-
-            for (Map.Entry<Integer, MicroSymbolTable> entry : tmp.entrySet())
+            for (Map.Entry<Integer, MicroSymbolTable> entry : mst.entrySet())
             {
                 int symbolTableID = entry.getValue().getSymbolTableId();
                 String symbolTable = entry.getValue().getSymbolTableName();
@@ -218,7 +102,9 @@ public class DriverSymbolTable
                 if (name != null && type != null && value != null)
                 {
                     String str = "name " + name + " type " + type + " value " + value;
-                    System.out.printf("[%d]: %s\n", symbolTableID, str);
+                    //System.out.printf("[%d]: %s\n", symbolTableID, str);
+
+                    buildGlobalString(name, type, value);
                 }
                 // ---------------------------------------------------------------------------------- //
 
@@ -228,23 +114,53 @@ public class DriverSymbolTable
                 if (name != null && type != null && value == null)
                 {
                     String str = "name " + name + " type " + type;
-                    System.out.printf("[%d]: %s\n", symbolTableID, str);
+                    //System.out.printf("[%d]: %s\n", symbolTableID, str);
+
+                    buildGlobalVar(name, type);
                 }
                 // ---------------------------------------------------------------------------------- //
                 // ================================================================================= //
             }
         }
-
     }
 
-
-    private void specialPrint(Map<Integer, MicroSymbolTable> tmp)
+    private void buildGlobalString(String id, String type, String value)
     {
-        for (Map.Entry<Integer, MicroSymbolTable> entry : tmp.entrySet())
-        {
-            System.out.printf("[%d]\n", entry.getKey());
-        }
+        String str = "str " + id + " " + value;
+        System.out.printf("%s\n", str);
     }
+
+    private void buildGlobalVar(String id, String type)
+    {
+        String str = "var " + id;
+        System.out.printf("%s\n", str);
+    }
+
+    private void buildLabel(String symbolTableName, boolean isBeginningOfBlock)
+    {
+
+    }
+
+    private void buildExpression(String expression, boolean isCondition, String blockName, boolean blockBeginning)
+    {
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Check for duplicate identifiers
@@ -294,4 +210,3 @@ public class DriverSymbolTable
         return duplicates;
     }
 }
-

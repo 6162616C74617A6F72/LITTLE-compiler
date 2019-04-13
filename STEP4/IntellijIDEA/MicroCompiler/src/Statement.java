@@ -1,3 +1,6 @@
+/**
+ * This class is used to store conditions and statement under specific symbol table.
+ */
 public class Statement
 {
     private String currentSymbolTableName = null;
@@ -8,6 +11,14 @@ public class Statement
 
     private boolean isBeginningOfBlock = false;
 
+    /**
+     * Constructor
+     * @param currentSymbolTableName
+     * @param lableName
+     * @param isCondition
+     * @param statement
+     * @param isBeginningOfBlock
+     */
     public Statement(String currentSymbolTableName, String lableName, boolean isCondition, String statement, boolean isBeginningOfBlock)
     {
         this.currentSymbolTableName = currentSymbolTableName;
