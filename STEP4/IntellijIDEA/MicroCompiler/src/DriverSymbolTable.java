@@ -60,6 +60,8 @@ public class DriverSymbolTable
             // Print symbol table for STEP 4
             print(microListener.getSymbolTable());
 
+            //specialPrint(microListener.getSymbolTable());
+
         }
         catch (IOException e)
         {
@@ -199,10 +201,10 @@ public class DriverSymbolTable
                         }
                         String strOut = entry.getValue().getStatementObj().getStatement();
 
-                        System.out.printf("\t\t%s --- %s: %s\n", lable, statement, strOut);
-
                         boolean isBeginningOfBlock = entry.getValue().getStatementObj().isBeginningOfBlock();
                         System.out.printf("\t\tBLOCK BEGINNING: %b\n", isBeginningOfBlock);
+
+                        System.out.printf("\t\t%s --- %s: %s\n", lable, statement, strOut);
                     }
                     // ---------------------------------------------------------------------------------- //
                 }
@@ -233,6 +235,14 @@ public class DriverSymbolTable
 
     }
 
+
+    private void specialPrint(Map<Integer, MicroSymbolTable> tmp)
+    {
+        for (Map.Entry<Integer, MicroSymbolTable> entry : tmp.entrySet())
+        {
+            System.out.printf("[%d]\n", entry.getKey());
+        }
+    }
 
     /**
      * Check for duplicate identifiers
