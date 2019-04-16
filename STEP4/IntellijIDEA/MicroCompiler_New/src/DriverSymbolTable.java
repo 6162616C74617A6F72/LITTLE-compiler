@@ -58,11 +58,14 @@ public class DriverSymbolTable
             // ----------------------------------------------------------------------------------- //
 
             // Print symbol table for STEP 4
+            // and generate tiny programming language
+            // ----------------------------------------------------------------------------------- //
             //print(microListener.getSymbolTable());
 
             CodeGeneration codeGeneration = new CodeGeneration(microListener.getSymbolTable());
             codeGeneration.demo();
             //specialPrint(microListener.getSymbolTable());
+            // ----------------------------------------------------------------------------------- //
 
         }
         catch (IOException e)
@@ -136,7 +139,7 @@ public class DriverSymbolTable
 
 
     /**
-     * Print symbol table for STEP 4
+     * IS JUST DEMO: Print symbol table for STEP 4
      * @param tmp: Map<Integer, MicroSymbolTable>
      */
     private void print(Map<Integer, MicroSymbolTable> tmp)

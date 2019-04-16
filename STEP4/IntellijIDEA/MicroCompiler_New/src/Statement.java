@@ -1,4 +1,10 @@
 /**
+ * Montana State University
+ * Class: Compilers - CSCI 468
+ * @author Olexandr Matveyev, Mandy Hawkins, Abdulrahman Alhitm, Michael Seeley
+ */
+
+/**
  * This class is used to store conditions and statement under specific symbol table.
  */
 public class Statement

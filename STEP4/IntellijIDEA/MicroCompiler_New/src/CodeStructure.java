@@ -1,3 +1,7 @@
+/**
+ *  Currently unused class
+ */
+
 public class CodeStructure
 {
     private String blockName = null;

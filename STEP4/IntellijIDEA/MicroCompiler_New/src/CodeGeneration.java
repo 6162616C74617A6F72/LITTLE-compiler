@@ -1,3 +1,9 @@
+/**
+ * Montana State University
+ * Class: Compilers - CSCI 468
+ * @author Olexandr Matveyev, Mandy Hawkins, Abdulrahman Alhitm, Michael Seeley
+ */
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -11,18 +17,26 @@ public class CodeGeneration
     // Symbol table
     private Map<Integer, MicroSymbolTable> mst = null;
 
-    // This map will be used to identify variable type
+    // This map will be used to identify variable types
     private Map<String, VarDeclaration> varMap = new HashMap<String, VarDeclaration>();
 
+    // Is used to generate labels for tiny language
     private int labelCount = 1;
+
+    // Stack of labels for WHILE BLOCK
     private Stack<String> labelsWhile = new Stack<String>();
+
+    // Stack of labels for IF BLOCK
     private Stack<String> labelsIf = new Stack<String>();
+
+    // Stack of labels for ELSE BLOCK, you can treat it as IF-ELSE BLOCK
     private Stack<String> labelsIfElse = new Stack<String>();
 
+    // Is used to count inner IF BLOCKS
     private int numOf_inner_IFs = 0;
 
     /**
-     * Constructor
+     * Constructor accepts MicroSymbolTable as argument
      * @param mst
      */
     public CodeGeneration(Map<Integer, MicroSymbolTable> mst)
@@ -32,7 +46,7 @@ public class CodeGeneration
 
     /**
      * This method is used to print each block of the source code from the symbol table,
-     * also is used to generate tiny code.
+     * also is used to partially generate tiny code.
      * Currently in the demo stage.
      */
     public void demo()
@@ -67,14 +81,14 @@ public class CodeGeneration
                 String value = entry.getValue().getValue();
                 // ------------------------------------------------------------------------ //
 
-                // GLOBAL DECLARATIONS
+                // PRINT GLOBAL DECLARATIONS
                 // =================================================================================== //
                 // Printing variables declarations
                 // is for STRING, INT, and FLOAT types
                 // ---------------------------------------------------------------------------------- //
                 if (name != null && type != null)
                 {
-                    buildGlobalVar(name, type, value);
+                    generateGlobalDeclarations(name, type, value);
                 }
                 // ---------------------------------------------------------------------------------- //
                 // =================================================================================== //
@@ -83,10 +97,10 @@ public class CodeGeneration
                 // =================================================================================== //
                 if (label != null)
                 {
-                    buildLabel(null, label, false, null);
+                    generateLabel(null, label, false, null);
                     System.out.printf("\n");
 
-                    // Print label stack of WHILE
+                    // Print label stack of WHILE labels
                     // Visit this if statement just ones to print end of WHILE
                     if (label.equals("EXIT-WHILE"))
                     {
@@ -104,14 +118,13 @@ public class CodeGeneration
                 }
                 // =================================================================================== //
 
-                // LOCAL DECLARATIONS
+                // PRINT LOCAL DECLARATIONS
                 // =================================================================================== //
                 // Printing statements and sys-statements, such as READ or WRITE
                 // ---------------------------------------------------------------------------------- //
                 if(entry.getValue().getStatementObj() != null)
                 {
-
-                    buildLocalVar(entry.getValue().getStatementObj(), symbolTableID, symbolTableName, label);
+                    generateLocalDeclarations(entry.getValue().getStatementObj(), symbolTableID, symbolTableName, label);
                     System.out.printf("\n");
                 }
 
@@ -125,8 +138,13 @@ public class CodeGeneration
         System.out.printf("sys halt\n");
     }
 
-    // Generating STRING, INT, FLOAT
-    private void buildGlobalVar(String id, String type, String value)
+    /**
+     * Generating GLOBAL STRING, INT, FLOAT declarations
+     * @param id
+     * @param type
+     * @param value
+     */
+    private void generateGlobalDeclarations(String id, String type, String value)
     {
         varMap.put(id, new VarDeclaration(id, type, null, false));
 
@@ -142,7 +160,14 @@ public class CodeGeneration
         System.out.printf("%s", str);
     }
 
-    public void buildLocalVar(Statement statementObj, int symbolTableID, String symbolTableName, String blockLabel)
+    /**
+     *  Partially generating local statements, such as expressions and conditions
+     * @param statementObj
+     * @param symbolTableID
+     * @param symbolTableName
+     * @param blockLabel
+     */
+    public void generateLocalDeclarations(Statement statementObj, int symbolTableID, String symbolTableName, String blockLabel)
     {
         // ------------------------------------------------------------------------------- //
         String labelTMP = statementObj.getLabelName();
@@ -156,6 +181,8 @@ public class CodeGeneration
         // ------------------------------------------------------------------------------- //
 
 
+        // Currently used just for testing purpose
+        // ------------------------------------------------------------------------------- //
         if(isCondition)
         {
             statementType = "condition";
@@ -164,23 +191,34 @@ public class CodeGeneration
         {
             statementType = "assignment";
         }
+        // ------------------------------------------------------------------------------- //
 
-        // Used for READ or WRITE
+        // Used for READ or WRITE, or to print statements: conditions and assignments
+        // ------------------------------------------------------------------------------- //
         if (isRead || isWrite)
         {
+            // Used to print sys-input and sys-output, such as READ or WRITE
+
             if (isRead) { labelTMP = "READ"; }
             else if (isWrite) { labelTMP = "WRITE"; }
-            buildSys(labelTMP, statement, isBeginningOfBlock, isRead, isWrite);
+            generateSys(labelTMP, statement, isBeginningOfBlock, isRead, isWrite);
         }
         else
         {
             // Used for statements, such as conditions and assignments
             buildStatement(labelTMP, isCondition, statement, statementType, isBeginningOfBlock);
         }
+        // ------------------------------------------------------------------------------- //
     }
 
-    // Generating Label
-    private void buildLabel(String symbolTableName, String lable, boolean isCondition, String statement)
+    /**
+     * Generating Label
+     * @param symbolTableName
+     * @param lable
+     * @param isCondition
+     * @param statement
+     */
+    private void generateLabel(String symbolTableName, String lable, boolean isCondition, String statement)
     {
         // Print labels or block names
         // ---------------------------------------------------------------------------- //
@@ -404,19 +442,38 @@ public class CodeGeneration
         // ---------------------------------------------------------------------------- //
     }
 
-    // Generating Condition or Expression
+    /**
+     * Generating Condition or Expression
+     * @param label
+     * @param isCondition
+     * @param statement
+     * @param statementType
+     * @param isBeginningOfBlock
+     */
     private void buildStatement(String label, boolean isCondition, String statement, String statementType, boolean isBeginningOfBlock)
     {
         if (isCondition)
         {
-            buildLabel(null, label, isCondition, statement);
+            // -------------------------------------------------------------------------------- //
+            // Here we should call "generateCondition" function to generate condition
+            // and after we have to generate labels based on current IF, ELSE or WHILE BLOCK,
+            // and based on current Condition
+            // -------------------------------------------------------------------------------- //
+
+            generateLabel(null, label, isCondition, statement);
         }
         else
         {
+            // -------------------------------------------------------------------------------- //
+            // Here we should call "generateExpression" function to generate assignment statement
+            // and after just print it out
+            // -------------------------------------------------------------------------------- //
+
             String str = statementType + " ::: " + statement;
             System.out.printf("%s", str);
         }
 
+        // Currently used for testing purpose
         // If end of function
         if (label.equals("MAIN-WRITE") && !isBeginningOfBlock)
         {
@@ -424,18 +481,25 @@ public class CodeGeneration
         }
     }
 
-    public void buildExpression()
+    public void generateCondition(String condition)
     {
-
+        // This method must be used to identify all part of the condition statement
     }
 
-    public void buildCondition()
+    public void generateExpression(String assignment)
     {
-
+        // This method must be used to identify all part of the assignment statement
     }
 
-    // Generating sys: READ or WRITE
-    private void buildSys(String lable, String statement, boolean isBeginningOfBlock, boolean isRead, boolean isWrite)
+    /**
+     * Generating sys: READ or WRITE
+     * @param lable
+     * @param statement
+     * @param isBeginningOfBlock
+     * @param isRead
+     * @param isWrite
+     */
+    private void generateSys(String lable, String statement, boolean isBeginningOfBlock, boolean isRead, boolean isWrite)
     {
 
         // Splitting up READ or WRITE statement

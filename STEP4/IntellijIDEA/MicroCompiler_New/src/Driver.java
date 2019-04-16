@@ -36,6 +36,11 @@ public class Driver
 
             try
             {
+                // USED FOR TESTING
+                //----------------------------------------------------------------------------//
+                System.out.printf("IN [DRIVER CLASS] CURRENT INPUT FILE: %s\n", fileName);
+                //----------------------------------------------------------------------------//
+
                 // Get resource from the file path
                 res = Paths.get(filePath).toUri().toURL();
 
