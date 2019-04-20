@@ -14,6 +14,9 @@ import java.util.Stack;
  */
 public class CodeGeneration
 {
+    // Assign operation
+    private final String ASSIGN = ":=";
+
     // Symbol table
     private Map<Integer, MicroSymbolTable> mst = null;
 
@@ -278,7 +281,19 @@ public class CodeGeneration
             }
             // ----------------------------------------------------------- //
 
-            String output = condStnt + "\n" + "jump-into: " + lblElse + "\nif-body";
+            // -------------------------------------------------------------------------------- //
+            // Here we should call "generateCondition" function to generate condition
+            // and after we have to generate labels based on current IF, ELSE or WHILE BLOCK,
+            // and based on current Condition
+            // -------------------------------------------------------------------------------- //
+
+            // DEMO
+            // -------------------------------------------------------------------------------- //
+            GenerateStatement gs = new GenerateStatement(varMap);
+            gs.buildComparison(condStnt);
+            // -------------------------------------------------------------------------------- //
+
+            String output = condStnt + "\n" + gs.getJumpName() + " " + lblElse + "\nif-body";
             System.out.printf("%s\n", output);
 
             // At some point this wearable used to identify multiple IF BLOCKS
@@ -407,7 +422,7 @@ public class CodeGeneration
                 labelsIf.push(lblExit);
                 // ------------------------------------------------------- //
 
-                String output = "jump-out " + lblExit + "\nlabel " + lblElse + "\n" + "else-body" + "\n";
+                String output = "jmp " + lblExit + "\nlabel " + lblElse + "\n" + "else-body" + "\n";
                 System.out.printf("\n%s\n", output);
             }
         }
@@ -425,18 +440,32 @@ public class CodeGeneration
         // ---------------------------------------------------------------------------- //
         if (lable.equals("WHILE") && isCondition)
         {
+            String condStnt = statement;
+
             String lblLoop = "label" + labelCount;
             labelCount++;
 
             String lblExit = "label" + labelCount;
             labelCount++;
 
+            // -------------------------------------------------------------------------------- //
+            // Here we should call "generateCondition" function to generate condition
+            // and after we have to generate labels based on current IF, ELSE or WHILE BLOCK,
+            // and based on current Condition
+            // -------------------------------------------------------------------------------- //
+
+            // DEMO
+            // -------------------------------------------------------------------------------- //
+            GenerateStatement gs = new GenerateStatement(varMap);
+            gs.buildComparison(condStnt);
+            // -------------------------------------------------------------------------------- //
+
             // Push to the stack "continue" and "exit" labels
             String lblContinue = "jmp " + lblLoop;
             labelsWhile.push(lblContinue);
             labelsWhile.push( ("label " + lblExit) );
 
-            String output = "label " + lblLoop + "\n" + statement + "\n" + "jump: " + lblExit;
+            String output = "label " + lblLoop + "\n" + condStnt + "\n" + gs.getJumpName() + " " + lblExit;
             System.out.printf("%s\n", output);
         }
         // ---------------------------------------------------------------------------- //
@@ -454,6 +483,7 @@ public class CodeGeneration
     {
         if (isCondition)
         {
+            // Moved to generate labels
             // -------------------------------------------------------------------------------- //
             // Here we should call "generateCondition" function to generate condition
             // and after we have to generate labels based on current IF, ELSE or WHILE BLOCK,
@@ -484,6 +514,8 @@ public class CodeGeneration
     public void generateCondition(String condition)
     {
         // This method must be used to identify all part of the condition statement
+
+
     }
 
     public void generateExpression(String assignment)
