@@ -6,12 +6,14 @@ import java.util.Map;
  */
 public class GenerateStatement
 {
-    private static int registerCount = 1;
+    private static int registerCount = 0;
 
     private String statement = null;
 
     // This map will be used to identify variable types
-    private Map<String, VarDeclaration> varMap = new HashMap<String, VarDeclaration>();
+    private Map<String, VarDeclaration> varMap = null;
+
+    private static Map<String, VarLocal> varLocalMap = new HashMap<String, VarLocal>();
 
     // FINAL Conditions map
     // Is used to build specific label which depends on condition
@@ -48,7 +50,9 @@ public class GenerateStatement
     private String jumpName = null;
     private String leftExpr = null;
     private String rightExpr = null;
-    private String compName = null;
+    private String compStmt = null;
+
+    private String condBody = null;
 
     // FINAL Assign operation map
     private final Map<String, String> assignMap = new HashMap<String, String>()
@@ -60,33 +64,23 @@ public class GenerateStatement
     };
 
     /**
-     * Constructor: Creating "GenerateStatement" with this constructor requires to
-     * passing "condition" into "build" method
-     * @param varMap
+     * Constructor
      */
-    public GenerateStatement(Map<String, VarDeclaration> varMap)
+    public GenerateStatement()
     {
-        this.varMap = varMap;
+
     }
 
-    /**
-     * Constructor: This constructor will call "build" method, so after you
-     * created "GenerateStatement" in this way you can get all generated components
-     * @param statement
-     * @param varMap
-     */
-    public GenerateStatement(String statement, Map<String, VarDeclaration> varMap)
+    public void buildComparison(String statement, Map<String, VarDeclaration> varMap)
     {
-        this.statement = statement;
         this.varMap = varMap;
-
-        this.buildComparison(statement);
-    }
-
-    public void buildComparison(String statement)
-    {
         this.statement = statement;
-        //conditionsMap
+
+        if (registerCount < VarLocal.getMaxRegNum())
+        {
+            registerCount = VarLocal.getMaxRegNum();
+            registerCount++;
+        }
 
         // Split-up statement
         // 1: Identifying comparison symbol
@@ -159,9 +153,11 @@ public class GenerateStatement
     {
         String lType = null;
         String left = null;
+        String regLeft = null;
 
         String rType = null;
         String right = null;
+        String regRight = null;
 
         // Split condition expression by its comparison symbol
         String tmp[] = statement.split(comp);
@@ -185,7 +181,10 @@ public class GenerateStatement
         }
         else if (isLiteral(left))
         {
-            lType = getType(left);
+            lType = findType(left);
+
+            // Get pre-generated register
+            regLeft = findReg(left);
         }
         //System.out.printf("*** %s: %s\n", left, lType);
         // ------------------------------------------------------------------------------------------- //
@@ -202,21 +201,87 @@ public class GenerateStatement
         }
         else if (isLiteral(right))
         {
-            rType = getType(right);
+            rType = findType(right);
+
+            // Get pre-generated register
+            regRight = findReg(right);
+
         }
         //System.out.printf("*** %s: %s\n", right, rType);
         // ------------------------------------------------------------------------------------------- //
 
-
         // Generating left-side of the condition
+        // But before we have to make sure that map of all variables does not include
+        // pre-generated register
         // ------------------------------------------------------------------------------------------ //
-
+        if (regLeft == null)
+        {
+            regLeft = "r" + registerCount;
+            leftExpr = "move " + left + " " + regLeft;
+            registerCount++;
+        }
+        else
+        {
+            //leftExpr = "move " + left + " " + regLeft;
+            regLeft = left;
+        }
         // ------------------------------------------------------------------------------------------ //
 
         // Generating right-side of the condition
+        // But before we have to make sure that map of all variables does not include
+        // pre-generated register
+        // ------------------------------------------------------------------------------------------ //
+        if (regRight == null)
+        {
+            regRight = "r" + registerCount;
+            rightExpr  = "move " + right + " " + regRight;
+            registerCount++;
+        }
+        else
+        {
+            //rightExpr  = "move " + right + " " + regRight;
+            regRight = right;
+        }
         // ------------------------------------------------------------------------------------------ //
 
-        // ------------------------------------------------------------------------------------------ //
+        if (lType.equals("INT") && rType.equals("INT"))
+        {
+            compStmt = "cmpi";
+        }
+        else if (lType.equals("FLOAT") && rType.equals("FLOAT"))
+        {
+            compStmt = "cmpr";
+        }
+
+        String tmp1 = "";
+        if (leftExpr != null)
+        {
+            tmp1 = leftExpr;
+        }
+        else
+        {
+            tmp1 = "";
+        }
+
+        String tmp2 = "";
+        if (rightExpr != null)
+        {
+            tmp2 = rightExpr;
+        }
+        else
+        {
+            tmp2 = "";
+        }
+
+        condBody = tmp1 + "\n" + tmp2;
+        compStmt = compStmt + " " + regLeft + " " + regRight;
+        condBody = condBody + "\n" + compStmt;
+
+    }
+
+    public String getCondBody()
+    {
+        return this.condBody;
     }
 
     /**
@@ -277,7 +342,7 @@ public class GenerateStatement
      * @param tmp
      * @return
      */
-    private String getType(String tmp)
+    private String findType(String tmp)
     {
         String type = null;
 
@@ -293,6 +358,30 @@ public class GenerateStatement
 
         return type;
     }
+
+    /**
+     * After we generate local statements we also generated register,
+     * so we have to find these registers and maximum register number
+     * @param var
+     * @return
+     */
+    private String findReg(String var)
+    {
+        String reg = null;
+
+        // Loop via varMap to identify type of each var
+        for (Map.Entry<String, VarLocal> entry : varLocalMap.entrySet())
+        {
+            if (var.equals(entry.getKey()))
+            {
+                reg = entry.getValue().getRegister();
+                break;
+            }
+        }
+
+        return reg;
+    }
+
 
 
     /** Get prefix for a label that is based on comparison expression
@@ -326,8 +415,8 @@ public class GenerateStatement
      * Only for conditions
      * @return
      */
-    public String getCompName()
+    public String getCompStmt()
     {
-        return this.compName;
+        return this.compStmt;
     }
 }

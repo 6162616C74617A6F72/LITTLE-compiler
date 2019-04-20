@@ -35,6 +35,8 @@ public class CodeGeneration
     // Stack of labels for ELSE BLOCK, you can treat it as IF-ELSE BLOCK
     private Stack<String> labelsIfElse = new Stack<String>();
 
+    private GenerateStatement gs = new GenerateStatement();
+
     // Is used to count inner IF BLOCKS
     private int numOf_inner_IFs = 0;
 
@@ -289,9 +291,10 @@ public class CodeGeneration
 
             // DEMO
             // -------------------------------------------------------------------------------- //
-            GenerateStatement gs = new GenerateStatement(varMap);
-            gs.buildComparison(condStnt);
+            gs.buildComparison(condStnt, varMap);
             // -------------------------------------------------------------------------------- //
+
+            condStnt = gs.getCondBody();
 
             String output = condStnt + "\n" + gs.getJumpName() + " " + lblElse + "\nif-body";
             System.out.printf("%s\n", output);
@@ -456,14 +459,15 @@ public class CodeGeneration
 
             // DEMO
             // -------------------------------------------------------------------------------- //
-            GenerateStatement gs = new GenerateStatement(varMap);
-            gs.buildComparison(condStnt);
+            gs.buildComparison(condStnt, varMap);
             // -------------------------------------------------------------------------------- //
 
             // Push to the stack "continue" and "exit" labels
             String lblContinue = "jmp " + lblLoop;
             labelsWhile.push(lblContinue);
             labelsWhile.push( ("label " + lblExit) );
+
+            condStnt = gs.getCondBody();
 
             String output = "label " + lblLoop + "\n" + condStnt + "\n" + gs.getJumpName() + " " + lblExit;
             System.out.printf("%s\n", output);

@@ -22,29 +22,65 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/CodeGeneration.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="199">
-              <caret line="592" selection-start-line="592" selection-end-line="593" selection-end-column="81" />
+            <state relative-caret-position="1739">
+              <caret line="296" column="40" selection-start-line="296" selection-start-column="40" selection-end-line="296" selection-end-column="40" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
                 <element signature="imports" expanded="true" />
+                <element signature="e#1267#1268#0" expanded="true" />
+                <element signature="e#1297#1298#0" expanded="true" />
                 <element signature="method#duplicateCheck#0;class#CodeGeneration#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/GenerateStatement.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-375">
-              <caret line="189" column="10" selection-start-line="189" selection-start-column="10" selection-end-line="189" selection-end-column="10" />
+            <state relative-caret-position="357">
+              <caret line="241" selection-start-line="241" selection-end-line="241" selection-end-column="60" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#9035#9036#0" expanded="true" />
-                <element signature="e#9224#9225#0" expanded="true" />
-                <element signature="e#9416#9417#0" expanded="true" />
-                <element signature="e#9592#9593#0" expanded="true" />
+                <element signature="e#352#370#0" expanded="true" />
+                <element signature="class#428:1023" />
+                <element signature="class#1123:1896" />
+                <element signature="e#9040#9041#0" expanded="true" />
+                <element signature="e#9076#9077#0" expanded="true" />
+                <element signature="e#11136#11137#0" expanded="true" />
+                <element signature="e#11325#11326#0" expanded="true" />
+                <element signature="e#11517#11518#0" expanded="true" />
+                <element signature="e#11762#11763#0" expanded="true" />
+                <element signature="e#11798#11799#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/VarLocal.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="383">
+              <caret line="37" column="24" selection-start-line="37" selection-start-column="24" selection-end-line="37" selection-end-column="24" />
+              <folding>
+                <element signature="e#493#494#0" expanded="true" />
+                <element signature="e#519#520#0" expanded="true" />
+                <element signature="e#570#571#0" expanded="true" />
+                <element signature="e#605#606#0" expanded="true" />
+                <element signature="e#645#646#0" expanded="true" />
+                <element signature="e#680#681#0" expanded="true" />
+                <element signature="e#723#724#0" expanded="true" />
+                <element signature="e#762#763#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/VarDeclaration.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="600">
+              <caret line="27" column="10" selection-start-line="27" selection-start-column="10" selection-end-line="27" selection-end-column="10" />
             </state>
           </provider>
         </entry>
@@ -64,8 +100,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/testfiles/Step4/tinyDoc.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1003">
-              <caret line="75" selection-start-line="75" selection-end-line="75" selection-end-column="42" />
+            <state relative-caret-position="178">
+              <caret line="51" column="4" selection-start-line="51" selection-end-line="51" selection-end-column="4" />
             </state>
           </provider>
         </entry>
@@ -74,16 +110,16 @@
         <entry file="file://$PROJECT_DIR$/testfiles/Step4/inputs/step4_testcase2.micro">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="150">
-              <caret line="15" column="17" selection-start-line="15" selection-start-column="17" selection-end-line="15" selection-end-column="17" />
+              <caret line="11" column="16" selection-start-line="11" selection-start-column="16" selection-end-line="11" selection-end-column="16" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/testfiles/Step4/outputs/step4_testcase2.out">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="238">
-              <caret line="64" selection-start-line="64" selection-end-line="65" selection-end-column="9" />
+            <state relative-caret-position="-83">
+              <caret line="65" column="9" lean-forward="true" selection-start-line="65" selection-start-column="9" selection-end-line="65" selection-end-column="9" />
             </state>
           </provider>
         </entry>
@@ -99,7 +135,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>label1</find>
       <find>main</find>
       <find>lableCounter</find>
       <find>exitWhi</find>
@@ -128,6 +163,7 @@
       <find>jeq</find>
       <find>jne</find>
       <find>varMap</find>
+      <find>generateGlobalDeclarations</find>
       <find>r15</find>
     </findStrings>
   </component>
@@ -141,7 +177,6 @@
         <option value="$PROJECT_DIR$/src/MicroGrammar.g4" />
         <option value="$PROJECT_DIR$/src/MicroVisitor.java" />
         <option value="$PROJECT_DIR$/testfiles/Step3/inputs/test6.micro" />
-        <option value="$PROJECT_DIR$/testfiles/Step4/inputs/step4_testcase2.micro" />
         <option value="$PROJECT_DIR$/testfiles/Step4/outputs/test_adv.out" />
         <option value="$PROJECT_DIR$/src/CustomToken.java" />
         <option value="$PROJECT_DIR$/src/MicroSymbolTable.java" />
@@ -151,14 +186,16 @@
         <option value="$PROJECT_DIR$/testfiles/Step4/outputs/step4_testcase2.out" />
         <option value="$PROJECT_DIR$/src/MicroListener.java" />
         <option value="$PROJECT_DIR$/src/Statement.java" />
-        <option value="$PROJECT_DIR$/src/VarDeclaration.java" />
         <option value="$PROJECT_DIR$/src/CodeStructure.java" />
         <option value="$PROJECT_DIR$/src/DriverSymbolTable.java" />
         <option value="$PROJECT_DIR$/src/Driver.java" />
         <option value="$PROJECT_DIR$/src/GenerateConditions.java" />
         <option value="$PROJECT_DIR$/testfiles/Step4/tinyDoc.txt" />
         <option value="$PROJECT_DIR$/src/GenerateCondition.java" />
+        <option value="$PROJECT_DIR$/testfiles/Step4/inputs/step4_testcase2.micro" />
         <option value="$PROJECT_DIR$/src/CodeGeneration.java" />
+        <option value="$PROJECT_DIR$/src/VarDeclaration.java" />
+        <option value="$PROJECT_DIR$/src/VarLocal.java" />
         <option value="$PROJECT_DIR$/src/GenerateStatement.java" />
       </list>
     </option>
@@ -275,8 +312,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.204236" />
+      <window_info content_ui="combo" id="Project" order="0" weight="0.204236" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -285,7 +323,7 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32993197" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.57482994" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.7517007" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39965987" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -339,9 +377,6 @@
     </layout-to-restore>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/testfiles/Step3/outputs/test16.out">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/testfiles/Step3/inputs/test16.micro">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="250">
@@ -494,17 +529,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/VarDeclaration.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="100">
-          <caret line="4" column="3" selection-start-line="4" selection-start-column="3" selection-end-line="4" selection-end-column="3" />
-          <folding>
-            <element signature="e#399#400#0" expanded="true" />
-            <element signature="e#429#430#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/CodeStructure.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="25">
@@ -647,18 +671,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/CodeGeneration.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="199">
-          <caret line="592" selection-start-line="592" selection-end-line="593" selection-end-column="81" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="imports" expanded="true" />
-            <element signature="method#duplicateCheck#0;class#CodeGeneration#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/testfiles/Step4/outputs/test_adv.out">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="388">
@@ -675,36 +687,80 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/testfiles/Step4/tinyDoc.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1003">
-          <caret line="75" selection-start-line="75" selection-end-line="75" selection-end-column="42" />
+        <state relative-caret-position="178">
+          <caret line="51" column="4" selection-start-line="51" selection-end-line="51" selection-end-column="4" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/testfiles/Step4/inputs/step4_testcase2.micro">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="150">
-          <caret line="15" column="17" selection-start-line="15" selection-start-column="17" selection-end-line="15" selection-end-column="17" />
+          <caret line="11" column="16" selection-start-line="11" selection-start-column="16" selection-end-line="11" selection-end-column="16" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/testfiles/Step4/outputs/step4_testcase2.out">
+    <entry file="file://$PROJECT_DIR$/src/CodeGeneration.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="64" selection-start-line="64" selection-end-line="65" selection-end-column="9" />
+        <state relative-caret-position="1739">
+          <caret line="296" column="40" selection-start-line="296" selection-start-column="40" selection-end-line="296" selection-end-column="40" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#1267#1268#0" expanded="true" />
+            <element signature="e#1297#1298#0" expanded="true" />
+            <element signature="method#duplicateCheck#0;class#CodeGeneration#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/VarDeclaration.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="600">
+          <caret line="27" column="10" selection-start-line="27" selection-start-column="10" selection-end-line="27" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/VarLocal.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="383">
+          <caret line="37" column="24" selection-start-line="37" selection-start-column="24" selection-end-line="37" selection-end-column="24" />
+          <folding>
+            <element signature="e#493#494#0" expanded="true" />
+            <element signature="e#519#520#0" expanded="true" />
+            <element signature="e#570#571#0" expanded="true" />
+            <element signature="e#605#606#0" expanded="true" />
+            <element signature="e#645#646#0" expanded="true" />
+            <element signature="e#680#681#0" expanded="true" />
+            <element signature="e#723#724#0" expanded="true" />
+            <element signature="e#762#763#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/GenerateStatement.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-375">
-          <caret line="189" column="10" selection-start-line="189" selection-start-column="10" selection-end-line="189" selection-end-column="10" />
+        <state relative-caret-position="357">
+          <caret line="241" selection-start-line="241" selection-end-line="241" selection-end-column="60" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#9035#9036#0" expanded="true" />
-            <element signature="e#9224#9225#0" expanded="true" />
-            <element signature="e#9416#9417#0" expanded="true" />
-            <element signature="e#9592#9593#0" expanded="true" />
+            <element signature="e#352#370#0" expanded="true" />
+            <element signature="class#428:1023" />
+            <element signature="class#1123:1896" />
+            <element signature="e#9040#9041#0" expanded="true" />
+            <element signature="e#9076#9077#0" expanded="true" />
+            <element signature="e#11136#11137#0" expanded="true" />
+            <element signature="e#11325#11326#0" expanded="true" />
+            <element signature="e#11517#11518#0" expanded="true" />
+            <element signature="e#11762#11763#0" expanded="true" />
+            <element signature="e#11798#11799#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/testfiles/Step4/outputs/step4_testcase2.out">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-83">
+          <caret line="65" column="9" lean-forward="true" selection-start-line="65" selection-start-column="9" selection-end-line="65" selection-end-column="9" />
         </state>
       </provider>
     </entry>
