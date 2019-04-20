@@ -1,0 +1,30 @@
+PROGRAM step4
+BEGIN
+
+	INT a, b, i, p;
+	STRING newline := "\n";
+
+	FUNCTION VOID main()
+	BEGIN
+
+		i := 0;
+		a := 0;
+		b := 0;
+
+		WHILE(i != 10)          --- label: label1 ::: cmpi i r3, if i == 10 [jeq label2], else CONTINUE
+			READ (p);
+
+			IF (p > 10)         --- cmpi p r4 ::: jle label3
+				a := a + 1;     --- IF BODY
+			ELSE                --- label: label3
+      			b := b + 1;     --- ELSE BODY, after jmp label4
+			ENDIF               --- label: label4 ::: EXIT IF
+
+			i := i+1;
+                                --- jmp label1 ::: CONTINUE WHILE
+		ENDWHILE                --- label label2
+
+		WRITE (a, newline);
+		WRITE (b, newline);
+	END
+END
