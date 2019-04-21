@@ -1,9 +1,12 @@
 /**
  * Montana State University
  * Class: Compilers - CSCI 468
- * @author Olexandr Matveyev, Mandy Hawkins, Abdulrahman Alhitm, Michael Seeley
+ * @author Olexandr Matveyev
  */
 
+/**
+ * This class is used to store declarations of all variables
+ */
 public class VarDeclaration
 {
     private boolean isString = false;

@@ -1,7 +1,7 @@
 /**
  * Montana State University
  * Class: Compilers - CSCI 468
- * @author Olexandr Matveyev, Mandy Hawkins, Abdulrahman Alhitm, Michael Seeley
+ * @author Olexandr Matveyev
  */
 
 import java.util.HashMap;
@@ -54,7 +54,7 @@ public class CodeGeneration
      * also is used to partially generate tiny code.
      * Currently in the demo stage.
      */
-    public void demo()
+    public void start()
     {
         // Check if symbol table get duplicate identifiers
         // if there are duplicate identifiers, then print and error message
@@ -511,6 +511,7 @@ public class CodeGeneration
             else
             {
                 assignmentBody = gs.getAssignmentBody();
+                gs.resetData();
             }
             // -------------------------------------------------------------------------------- //
 

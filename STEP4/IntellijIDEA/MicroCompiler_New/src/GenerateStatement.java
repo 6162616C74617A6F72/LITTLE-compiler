@@ -1,10 +1,15 @@
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
+/**
+ * Montana State University
+ * Class: Compilers - CSCI 468
+ * @author Olexandr Matveyev
+ */
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 
 /**
- *
+ *  This class is used to generate statements
  */
 public class GenerateStatement
 {
@@ -18,6 +23,7 @@ public class GenerateStatement
     // This map is used to hold generated Tiny code for each pair of variables,
     // but it mostly used for complex expressions
     private Map<String, MicroExpression> microExpressionMap = new HashMap<String, MicroExpression>();
+    private Stack<MicroExpression> stackOFMicroExpr = new Stack<MicroExpression>();
 
     // FINAL Conditions map
     // Is used to build specific label which depends on condition
@@ -405,14 +411,18 @@ public class GenerateStatement
      */
     public void buildComplexAssignment(String lType, String left, String right)
     {
-        System.out.printf("[ %s ]\n", right);
+        System.out.printf("[ %s := %s ]\n", left, right);
 
-        MicroExpression microExpression = null;
-        String newStmt = "";
         boolean hasBrackets = false;
-
-
         char stm[] = right.toCharArray();
+        String stmt[] = new String[stm.length];
+
+        // Build array of string for each token in the statement expression
+        for (int i = 0; i < stm.length; i++)
+        {
+            stmt[i] = Character.toString(stm[i]);
+        }
+
         for (int i = 0; i < stm.length; i++)
         {
             if (stm[i] == '(' || stm[i] == ')')
@@ -428,138 +438,315 @@ public class GenerateStatement
 
         if (!hasBrackets)
         {
-            String stmt[] = new String[stm.length];
-            // Build array of string for each token in the statement expression
-            for (int i = 0; i < stm.length; i++)
-            {
-                stmt[i] = Character.toString(stm[i]);
-            }
+            String tmp[] = null;
 
-            String tmp = null;
-            for (int i = 0; i < stmt.length; i++)
-            {
-                String arithmeticSymbol = null;
-                if (stmt[i].equals("*") || stmt[i].equals("/"))
-                {
-                    // Just local variables
-                    // ------------------------------------------------------------------------ //
-                    String id1 = null;
-                    String id2 = null;
+            // Working on [*] and [/]
+            // will return modified array of strings
+            tmp = multiplyDivide(stmt);
 
-                    String id1Type = null;
-                    String id2Type = null;
+            // Working on [+] and [-]
+            // will return void because eliminating [+] and [-] should be final stage
+            tmp = addSubtract(tmp);
 
-                    String command = null;
-                    // ------------------------------------------------------------------------ //
+            // Store the least generated register in the right side of expression
+            // basically store in in the final variable
+            assignmentBody = finalAssignment(left, tmp);
 
-                    // Test for milt or div
-                    // ------------------------------------------------------------------------ //
-                    if (stmt[i].equals("*"))
-                    {
-                        id1 = Character.toString(stm[i - 1]);
-                        id2 = Character.toString(stm[i + 1]);
-                        arithmeticSymbol = "*";
-                    }
-                    else if (stmt[i].equals("/"))
-                    {
-                        id1 = Character.toString(stm[i - 1]);
-                        id2 = Character.toString(stm[i + 1]);
-                        arithmeticSymbol = "/";
-                    }
-                    // ------------------------------------------------------------------------ //
-
-                    // Checking type of current variables
-                    // ------------------------------------------------------------------------ //
-                    id1Type = typeTest(id1);
-                    id2Type = typeTest(id2);
-                    // ------------------------------------------------------------------------ //
-
-                    // Find appropriate Tiny command for the specific arithmetic operation
-                    // ------------------------------------------------------------------------ //
-                    if (id1Type.equals(id2Type))
-                    {
-                        for (Map.Entry<String, String> entry : arithmeticMap.entrySet())
-                        {
-                            String tmp1[] = entry.getKey().split("#");
-                            if (id1Type.equals(tmp1[0]) && arithmeticSymbol.equals(tmp1[1]))
-                            {
-                                command = entry.getValue();
-                                break;
-                            }
-                        }
-                    }
-                    // ------------------------------------------------------------------------ //
-
-                    // Generating Tiny code for this pair of variables
-                    // ------------------------------------------------------------------------ //
-                    //System.out.printf("ID1: %s --- %s\n", id1, id1Type);
-                    //System.out.printf("arithmetic symbol: %s\n", arithmeticSymbol);
-                    //System.out.printf("command: %s\n", command);
-                    //System.out.printf("ID1: %s --- %s\n", id2, id2Type);
-
-                    //microExpressionMap
-                    String microExpr = null;
-
-                    int regNum1 = registerCount;
-                    String reg1 = "r" + registerCount;
-                    registerCount++;
-
-                    int regNum2 = registerCount;
-                    String reg2 = "r" + registerCount;
-                    registerCount++;
-
-                    int regNum3 = registerCount;
-                    String reg3 = "r" + registerCount;
-                    registerCount++;
-
-                    //muli opmrl reg: computes reg = reg * op1
-                    //divi opmrl reg: computes reg = reg / op1
-
-                    microExpr = "move " + id1 + " " + reg1 + "\n";
-                    microExpr = microExpr + "move " + id2 + " " + reg2 + "\n";
-                    microExpr = microExpr + command + " " + reg1 + " " + reg2 + "\n";
-                    //microExpr = microExpr + "move " + reg1 + " " + reg3;
-
-                    microExpression = new MicroExpression(id1, id2, reg1, microExpr, arithmeticSymbol, regNum1);
-                    microExpressionMap.put(reg1, microExpression);
-
-                    // Remove user variables and its arithmetic value,
-                    // and replace last var with register were we did store result
-                    stmt[i - 1] = "";
-                    stmt[i] = "";
-                    stmt[i + 1] = reg1;
-
-                    //newStmt = newStmt + reg3;
-                    //System.out.printf("\n------------\n%s------------\n\n", microExpr);
-
-                    // ------------------------------------------------------------------------ //
-                }
-                else
-                {
-                    //newStmt = newStmt + stmt[i];
-                    //System.out.printf("%c\n", stm[i]);
-                }
-
-                //newStmt = newStmt + stmt[i];
-
-            }
-
-            System.out.printf("----------\n");
-            for (int i = 0; i < stmt.length; i++)
-            {
-                if (!stmt[i].equals(""))
-                {
-                    System.out.printf("%s\n", stmt[i]);
-                }
-            }
-            System.out.printf("----------\n");
         }
         else
         {
             // Do something if expression has brackets
         }
 
-        assignmentBody = null;
+        //assignmentBody = null;
+    }
+
+    private String[] multiplyDivide(String stmt[])
+    {
+        MicroExpression microExpression = null;
+
+        String tmp = null;
+        for (int i = 0; i < stmt.length; i++)
+        {
+            String arithmeticSymbol = null;
+            if (stmt[i].equals("*") || stmt[i].equals("/"))
+            {
+                // Just local variables
+                // ------------------------------------------------------------------------ //
+                String id1 = null;
+                String id2 = null;
+
+                String id1Type = null;
+                String id2Type = null;
+
+                String command = null;
+                // ------------------------------------------------------------------------ //
+
+                // Test for milt or div
+                // I am looking one-symbol behind and one-symbol ahead for [*] and [/]
+                // in order to get its children variables
+                // ------------------------------------------------------------------------ //
+                if (stmt[i].equals("*"))
+                {
+                    id1 = stmt[i - 1];
+                    id2 = stmt[i + 1];
+                    arithmeticSymbol = "*";
+                }
+                else if (stmt[i].equals("/"))
+                {
+                    id1 = stmt[i - 1];
+                    id2 = stmt[i + 1];
+                    arithmeticSymbol = "/";
+                }
+                // ------------------------------------------------------------------------ //
+
+                // Checking type of current variables
+                // ------------------------------------------------------------------------ //
+                id1Type = typeTest(id1);
+                id2Type = typeTest(id2);
+                String type = null;
+                // ------------------------------------------------------------------------ //
+
+                // Find appropriate Tiny command for the specific arithmetic operation
+                // ------------------------------------------------------------------------ //
+                if (id1Type.equals(id2Type))
+                {
+                    for (Map.Entry<String, String> entry : arithmeticMap.entrySet())
+                    {
+                        String tmp1[] = entry.getKey().split("#");
+                        if (id1Type.equals(tmp1[0]) && arithmeticSymbol.equals(tmp1[1]))
+                        {
+                            command = entry.getValue();
+                            type = id1Type;
+                            break;
+                        }
+                    }
+                }
+                // ------------------------------------------------------------------------ //
+
+                // Generating Tiny code for this pair of variables
+                // ------------------------------------------------------------------------ //
+                //System.out.printf("ID1: %s --- %s\n", id1, id1Type);
+                //System.out.printf("arithmetic symbol: %s\n", arithmeticSymbol);
+                //System.out.printf("command: %s\n", command);
+                //System.out.printf("ID2: %s --- %s\n", id2, id2Type);
+
+                //microExpressionMap
+                String microExpr = null;
+
+                int regNum1 = registerCount;
+                String reg1 = "r" + registerCount;
+                registerCount++;
+
+                int regNum2 = registerCount;
+                String reg2 = "r" + registerCount;
+                registerCount++;
+
+                //muli opmrl reg: computes reg = reg * op1
+                //divi opmrl reg: computes reg = reg / op1
+
+                microExpr = "move " + id1 + " " + reg1 + "\n";
+                microExpr = microExpr + "move " + id2 + " " + reg2 + "\n";
+                microExpr = microExpr + command + " " + reg1 + " " + reg2 + "\n";
+
+                microExpression = new MicroExpression(id1, id2, reg1, microExpr, arithmeticSymbol, type, regNum1);
+                microExpressionMap.put(reg1, microExpression);
+
+                stackOFMicroExpr.push(microExpression);
+
+                // Remove user variables and its arithmetic value,
+                // and replace last var with register were we did store result
+                stmt[i - 1] = "";
+                stmt[i] = "";
+                stmt[i + 1] = reg1;
+
+                // ------------------------------------------------------------------------ //
+            }
+        }
+
+        /*
+        System.out.printf("multiply-divide\n----------\n");
+        for (int i = 0; i < stmt.length; i++)
+        {
+            if (!stmt[i].equals(""))
+            {
+                System.out.printf("%s\n", stmt[i]);
+            }
+        }
+        System.out.printf("----------\n");
+        */
+
+        // Cleaning up stmt from empty strings
+        // and returning it
+        return cleaningUpArray(stmt);
+    }
+
+    private String[] addSubtract(String stmt[])
+    {
+        MicroExpression microExpression = null;
+
+        String tmp = null;
+        for (int i = 0; i < stmt.length; i++)
+        {
+            String arithmeticSymbol = null;
+            if (stmt[i].equals("+") || stmt[i].equals("-"))
+            {
+                // Just local variables
+                // ------------------------------------------------------------------------ //
+                String id1 = null;
+                String id2 = null;
+
+                String id1Type = null;
+                String id2Type = null;
+
+                String command = null;
+                // ------------------------------------------------------------------------ //
+
+                // Test for milt or div
+                // I am looking one-symbol behind and one-symbol ahead for [*] and [/]
+                // in order to get its children variables
+                // ------------------------------------------------------------------------ //
+                if (stmt[i].equals("+"))
+                {
+                    id1 = stmt[i - 1];
+                    id2 = stmt[i + 1];
+                    arithmeticSymbol = "+";
+                }
+                else if (stmt[i].equals("-"))
+                {
+                    id1 = stmt[i - 1];
+                    id2 = stmt[i + 1];
+                    arithmeticSymbol = "-";
+                }
+                // ------------------------------------------------------------------------ //
+
+                // Checking type of current variables
+                // ------------------------------------------------------------------------ //
+                id1Type = typeTest(id1);
+                id2Type = typeTest(id2);
+                String type = null;
+                // ------------------------------------------------------------------------ //
+
+                // Find appropriate Tiny command for the specific arithmetic operation
+                // ------------------------------------------------------------------------ //
+                if (id1Type.equals(id2Type))
+                {
+                    for (Map.Entry<String, String> entry : arithmeticMap.entrySet())
+                    {
+                        String tmp1[] = entry.getKey().split("#");
+                        if (id1Type.equals(tmp1[0]) && arithmeticSymbol.equals(tmp1[1]))
+                        {
+                            command = entry.getValue();
+                            type = id1Type;
+                            break;
+                        }
+                    }
+                }
+                // ------------------------------------------------------------------------ //
+
+                // Generating Tiny code for this pair of variables
+                // ------------------------------------------------------------------------ //
+                //System.out.printf("ID1: %s --- %s\n", id1, id1Type);
+                //System.out.printf("arithmetic symbol: %s\n", arithmeticSymbol);
+                //System.out.printf("command: %s\n", command);
+                //System.out.printf("ID2: %s --- %s\n", id2, id2Type);
+
+                //microExpressionMap
+                String microExpr = null;
+
+                int regNum1 = registerCount;
+                String reg1 = "r" + registerCount;
+                registerCount++;
+
+                int regNum2 = registerCount;
+                String reg2 = "r" + registerCount;
+                registerCount++;
+
+                //muli opmrl reg: computes reg = reg * op1
+                //divi opmrl reg: computes reg = reg / op1
+
+                microExpr = "move " + id1 + " " + reg1 + "\n";
+                microExpr = microExpr + "move " + id2 + " " + reg2 + "\n";
+                microExpr = microExpr + command + " " + reg1 + " " + reg2 + "\n";
+
+                microExpression = new MicroExpression(id1, id2, reg1, microExpr, arithmeticSymbol, type, regNum1);
+                microExpressionMap.put(reg1, microExpression);
+
+                stackOFMicroExpr.push(microExpression);
+
+                // Remove user variables and its arithmetic value,
+                // and replace last var with register were we did store result
+                stmt[i - 1] = "";
+                stmt[i] = "";
+                stmt[i + 1] = reg1;
+
+                // ------------------------------------------------------------------------ //
+            }
+        }
+
+        /*
+        System.out.printf("add-subtract\n----------\n");
+        for (int i = 0; i < stmt.length; i++)
+        {
+            if (!stmt[i].equals(""))
+            {
+                System.out.printf("%s\n", stmt[i]);
+            }
+        }
+        System.out.printf("----------\n");
+        */
+
+        // Cleaning up stmt from empty strings
+        // and returning it
+        return cleaningUpArray(stmt);
+
+    }
+
+    private String[] cleaningUpArray(String stmt[])
+    {
+        // Cleaning up stmt from empty strings
+        // --------------------------------------------------------------------------------- //
+        int newSize = 0;
+        for (int i = 0; i < stmt.length; i++)
+        {
+            if (!stmt[i].equals(""))
+            {
+                newSize++;
+            }
+        }
+
+        String output[] = new String[newSize];
+        int count = 0;
+        for (int i = 0; i < stmt.length; i++)
+        {
+            if (!stmt[i].equals(""))
+            {
+                output[count] = stmt[i];
+                count++;
+            }
+        }
+        // --------------------------------------------------------------------------------- //
+
+        return output;
+    }
+
+    private String finalAssignment(String left, String stmt[])
+    {
+        String tmp1 = "";
+        String tmp2 = "";
+
+        tmp1 = "move " + stmt[0] + " " + left;
+
+        //assignmentBody
+        //Test print stack
+        for (MicroExpression me : stackOFMicroExpr)
+        {
+            tmp2 = tmp2 + me.getTinyCode();
+            //System.out.printf("%s\n", me.getTinyCode());
+        }
+        tmp2 = tmp2 + tmp1;
+
+        return tmp2;
     }
 
     private String typeTest(String id)
@@ -577,6 +764,19 @@ public class GenerateStatement
         else if (isLiteral(id))
         {
             type = findType(id);
+
+            // id can be in the form of register, so we have to use
+            // another way to find out data-type of register
+            if (type == null)
+            {
+                for (Map.Entry<String, MicroExpression> entry : microExpressionMap.entrySet())
+                {
+                    if (id.equals(entry.getKey()))
+                    {
+                        type = entry.getValue().getType();
+                    }
+                }
+            }
         }
 
         return type;
@@ -734,5 +934,11 @@ public class GenerateStatement
     public String getCompStmt()
     {
         return this.compStmt;
+    }
+
+    public void resetData()
+    {
+        this.assignmentBody = null;
+        stackOFMicroExpr = new Stack<MicroExpression>();
     }
 }

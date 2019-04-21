@@ -13,6 +13,7 @@ BEGIN
 
           e := a * c + b * d;
           e := c - b + a * a / c - b / d * a;
+          a := (b / c + b) + (a * a / c) - b / d * a;
 
           WRITE(c, newline, d, newline, e, newline);
 

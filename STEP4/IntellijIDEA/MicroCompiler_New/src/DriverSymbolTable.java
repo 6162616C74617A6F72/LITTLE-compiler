@@ -1,7 +1,7 @@
 /**
  * Montana State University
  * Class: Compilers - CSCI 468
- * @author Olexandr Matveyev, Mandy Hawkins, Abdulrahman Alhitm, Michael Seeley
+ * @author Olexandr Matveyev
  */
 
 /*ANTLR4 libs import */
@@ -63,7 +63,7 @@ public class DriverSymbolTable
             //print(microListener.getSymbolTable());
 
             CodeGeneration codeGeneration = new CodeGeneration(microListener.getSymbolTable());
-            codeGeneration.demo();
+            codeGeneration.start();
             //specialPrint(microListener.getSymbolTable());
             // ----------------------------------------------------------------------------------- //
 
