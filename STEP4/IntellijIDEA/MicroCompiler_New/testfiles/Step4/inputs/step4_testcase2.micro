@@ -2,6 +2,7 @@ PROGRAM p
 BEGIN
 
 	INT a,b,k,g,p,u;
+	FLOAT x;
 	STRING newline := "\n";
 	
 	FUNCTION VOID main()
@@ -9,7 +10,13 @@ BEGIN
 
 		a := 1;
 		b := 1;
+
+		x := 0.8;
+
         WHILE (a <= 80)
+        	IF (x > 1.0)
+        		WRITE (a);
+        	ENDIF
 			IF (b = 1)
 				g := 1*a;
 				WRITE (g, newline);

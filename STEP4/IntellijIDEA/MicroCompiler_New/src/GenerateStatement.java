@@ -107,6 +107,9 @@ public class GenerateStatement
      */
     public void buildCondition()
     {
+        // JUSt TESTING
+        System.out.printf("[ %s ]\n", statement);
+
         char smt[] = statement.toCharArray();
         boolean isFound = false;
         String comp = null;
@@ -168,6 +171,7 @@ public class GenerateStatement
         {
             this.jumpName = tmpJump;
 
+            System.out.printf(" \t---> [ %s ] <---\n", comp);
             generateCondition(smt, comp);
         }
     }
@@ -192,6 +196,10 @@ public class GenerateStatement
 
         left = tmp[0];
         right = tmp[1];
+
+        System.out.printf(" \t===> [ %s ] <===\n", comp);
+        System.out.printf(" \t===> [ %s ] <===\n", left);
+        System.out.printf(" \t===> [ %s ] <===\n", right);
 
         // Testing
         isLiteral(left);
@@ -368,6 +376,9 @@ public class GenerateStatement
         }
         // ------------------------------------------------------------------------------------------- //
 
+        //buildComplexAssignment(lType, left, right);
+
+
         // Simple assignments must be in form: a := DIGIT
         if (isComplex)
         {
@@ -379,6 +390,7 @@ public class GenerateStatement
             // Building simple assignment
             buildSimpleAssignment(left, right);
         }
+
     }
 
     /**
@@ -389,6 +401,8 @@ public class GenerateStatement
      */
     public void buildSimpleAssignment(String left, String right)
     {
+        System.out.printf("[ %s := %s ]\n", left, right);
+
         String rightExpr = null;
         String regRight = null;
 
@@ -403,6 +417,73 @@ public class GenerateStatement
         //System.out.printf("%s\n", assignmentBody);
     }
 
+    private String[] modifyExprInput(String left, String right)
+    {
+        // JUSt TESTING
+        System.out.printf("[ %s := %s ]\n", left, right);
+
+        // Adding new-line, later it will help us to rebuild digits in this input-line
+        right = right + "\n";
+
+        // Splitting up string-line into individual characters
+        String stmt[] = right.split("");
+
+        // This string will store digit
+        String tmpDigit = "";
+        int startIndex = 0;
+        int endIndex = 0;
+        int range = 0;
+        String symbols[] = {"+", "-", "*", "/", "(", ")"};
+
+        // When converting into string array,
+        // extra check must be developed to capture entire number
+        // currently program missing full length of digit
+        for (int i = 0; i < stmt.length; i++)
+        {
+            if (stmt[i].matches("[0-9]"))
+            {
+                // Storing beginning of a digit
+                startIndex = i;
+                boolean stop = false;
+
+                // Looking for the end of a digit
+                for (int j = i; j < stmt.length; j++)
+                {
+                    // Loop via all symbols to find match
+                    for (int k = 0; k < symbols.length; k++)
+                    {
+                        if (stmt[j].equals(symbols[k]) || stmt[j].equals("\n"))
+                        {
+                            endIndex = j - 1;
+                            stop = true;
+                            break;
+                        }
+                    }
+
+                    if (stop)
+                    {
+                        break;
+                    }
+                }
+
+                for (i = startIndex; i <= endIndex; i++)
+                {
+                    tmpDigit = tmpDigit + stmt[i];
+                    stmt[i] = "";
+                }
+                stmt[endIndex] = tmpDigit;
+            }
+
+            tmpDigit = "";
+            startIndex = 0;
+            endIndex = 0;
+        }
+
+        stmt = cleaningUpArray(stmt);
+
+        return stmt;
+    }
+
     /**
      * This function is used to generate complex assignment expressions,
      * such as [a := a + b + 1] or [b := (b * 2) - 5]
@@ -411,24 +492,7 @@ public class GenerateStatement
      */
     public void buildComplexAssignment(String lType, String left, String right)
     {
-        System.out.printf("[ %s := %s ]\n", left, right);
-
-        char stm[] = right.toCharArray();
-        String stmt[] = new String[stm.length];
-
-        // Build array of strings for all tokens in the statement expression
-        // it is way easier to work further with strings than with chars
-        System.out.printf("\n=========================\n");
-        for (int i = 0; i < stm.length; i++)
-        {
-            // When converting into string array,
-            // extra check must be developed to capture entire number
-            // currently program missing full length of digit
-
-            stmt[i] = Character.toString(stm[i]);
-            System.out.printf("%c\n", stm[i]);
-        }
-        System.out.printf("=========================\n");
+        String stmt[] = modifyExprInput(left, right);
 
         String newExpression = "";
         String exprTmp[] = new String[stmt.length];
@@ -759,7 +823,7 @@ public class GenerateStatement
         {
             if (stmt[i] != null)
             {
-                if (!stmt[i].equals(""))
+                if (!stmt[i].equals("") && !stmt[i].equals("\n"))
                 {
                     newSize++;
                 }
@@ -772,7 +836,7 @@ public class GenerateStatement
         {
             if (stmt[i] != null)
             {
-                if (!stmt[i].equals(""))
+                if (!stmt[i].equals("") && !stmt[i].equals("\n"))
                 {
                     output[count] = stmt[i];
                     count++;
