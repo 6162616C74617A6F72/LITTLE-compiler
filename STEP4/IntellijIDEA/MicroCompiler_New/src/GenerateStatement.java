@@ -413,59 +413,108 @@ public class GenerateStatement
     {
         System.out.printf("[ %s := %s ]\n", left, right);
 
-        boolean hasBrackets = false;
         char stm[] = right.toCharArray();
         String stmt[] = new String[stm.length];
 
-        // Build array of string for each token in the statement expression
+        // Build array of strings for all tokens in the statement expression
+        // it is way easier to work further with strings than with chars
+        System.out.printf("\n=========================\n");
         for (int i = 0; i < stm.length; i++)
         {
-            stmt[i] = Character.toString(stm[i]);
-        }
+            // When converting into string array,
+            // extra check must be developed to capture entire number
+            // currently program missing full length of digit
 
-        for (int i = 0; i < stm.length; i++)
+            stmt[i] = Character.toString(stm[i]);
+            System.out.printf("%c\n", stm[i]);
+        }
+        System.out.printf("=========================\n");
+
+        String newExpression = "";
+        String exprTmp[] = new String[stmt.length];
+        int exprTmpCount = 0;
+        int indexStart = 0;
+        int indexEnd = 0;
+        boolean subExpr = false;
+        for (int i = 0; i < stmt.length; i++)
         {
-            if (stm[i] == '(' || stm[i] == ')')
+            // We have to in the first place compute expression between brackets
+            if (stmt[i].equals("(") || stmt[i].equals(")"))
             {
-                hasBrackets = true;
-                break;
+                String tmp = "";
+                // We have to identify beginning of the expression
+                // between brackets
+                if (stmt[i].equals("("))
+                {
+                    indexStart = i + 1;
+                    subExpr = true;
+                }
+                if (stmt[i].equals(")"))
+                {
+                    indexEnd = i;
+                    subExpr = false;
+
+                    // Build new sub-expression
+                    // ---------------------------------------------- //
+                    int arrSize = indexEnd - indexStart;
+                    int countTmp = 0;
+                    String subExprTMP[] = new String[arrSize];
+                    for (int j = indexStart; j < indexEnd; j++)
+                    {
+                        subExprTMP[countTmp] = stmt[j];
+                        countTmp++;
+                    }
+                    // ---------------------------------------------- //
+
+                    // Computing sub-expression
+                    // ------------------------------------------------------------------------- //
+                    // Working on [*] and [/]
+                    // will return modified array of strings
+                    subExprTMP = multiplyDivide(subExprTMP);
+
+                    // Working on [+] and [-]
+                    // will return void because eliminating [+] and [-] should be final stage
+                    subExprTMP = addSubtract(subExprTMP);
+                    // ------------------------------------------------------------------------- //
+
+                    // Replace closing bracket of the current sub-expressions with
+                    // register which will store sub-expression computation result
+                    stmt[i] = subExprTMP[0];
+                    i--;
+                }
             }
             else
             {
-                hasBrackets = false;
+                if (!subExpr)
+                {
+                    exprTmp[exprTmpCount] = stmt[i];
+                    exprTmpCount++;
+                }
             }
         }
 
-        if (!hasBrackets)
-        {
-            String tmp[] = null;
+        // Re-build exprTmp array, and remove all empty and null records
+        exprTmp = cleaningUpArray(exprTmp);
 
-            // Working on [*] and [/]
-            // will return modified array of strings
-            tmp = multiplyDivide(stmt);
+        // Final stage, the exprTmp should not contain any brackets
+        // Working on [*] and [/]
+        // will return modified array of strings
+        exprTmp = multiplyDivide(exprTmp);
 
-            // Working on [+] and [-]
-            // will return void because eliminating [+] and [-] should be final stage
-            tmp = addSubtract(tmp);
+        // Working on [+] and [-]
+        // will return void because eliminating [+] and [-] should be final stage
+        exprTmp = addSubtract(exprTmp);
 
-            // Store the least generated register in the right side of expression
-            // basically store in in the final variable
-            assignmentBody = finalAssignment(left, tmp);
+        // Store the least generated register in the right side of expression
+        // basically store in in the final variable
+        assignmentBody = finalAssignment(left, exprTmp);
 
-        }
-        else
-        {
-            // Do something if expression has brackets
-        }
-
-        //assignmentBody = null;
     }
 
     private String[] multiplyDivide(String stmt[])
     {
         MicroExpression microExpression = null;
 
-        String tmp = null;
         for (int i = 0; i < stmt.length; i++)
         {
             String arithmeticSymbol = null;
@@ -585,7 +634,6 @@ public class GenerateStatement
     {
         MicroExpression microExpression = null;
 
-        String tmp = null;
         for (int i = 0; i < stmt.length; i++)
         {
             String arithmeticSymbol = null;
@@ -709,9 +757,12 @@ public class GenerateStatement
         int newSize = 0;
         for (int i = 0; i < stmt.length; i++)
         {
-            if (!stmt[i].equals(""))
+            if (stmt[i] != null)
             {
-                newSize++;
+                if (!stmt[i].equals(""))
+                {
+                    newSize++;
+                }
             }
         }
 
@@ -719,10 +770,13 @@ public class GenerateStatement
         int count = 0;
         for (int i = 0; i < stmt.length; i++)
         {
-            if (!stmt[i].equals(""))
+            if (stmt[i] != null)
             {
-                output[count] = stmt[i];
-                count++;
+                if (!stmt[i].equals(""))
+                {
+                    output[count] = stmt[i];
+                    count++;
+                }
             }
         }
         // --------------------------------------------------------------------------------- //
