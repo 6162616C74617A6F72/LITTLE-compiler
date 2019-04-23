@@ -35,6 +35,9 @@ public class CodeGeneration
     // Stack of labels for ELSE BLOCK, you can treat it as IF-ELSE BLOCK
     private Stack<String> labelsIfElse = new Stack<String>();
 
+    // Final output will be stored in a stack
+    private Stack<String> finalOutput = new Stack<String>();
+
     private GenerateStatement gs = new GenerateStatement();
 
     // Is used to count inner IF BLOCKS
@@ -102,8 +105,8 @@ public class CodeGeneration
                 // =================================================================================== //
                 if (label != null)
                 {
-                    generateLabel(null, label, false, null);
-                    System.out.printf("\n");
+                    generateLabel(null, label, false, null, entry.getValue().isFunction());
+                    //System.out.printf("\n");
 
                     // Print label stack of WHILE labels
                     // Visit this if statement just ones to print end of WHILE
@@ -113,10 +116,14 @@ public class CodeGeneration
                         {
                             for (String s : labelsWhile)
                             {
-                                System.out.printf("%s\n", s.toLowerCase());
+
+                                // Store in the stack
+                                finalOutput.push( (s.toLowerCase()) );
+
+                                //System.out.printf("%s\n", s.toLowerCase());
                             }
                             labelsWhile = null;
-                            System.out.printf("\n");
+                            //System.out.printf("\n");
                         }
                     }
 
@@ -130,17 +137,20 @@ public class CodeGeneration
                 if(entry.getValue().getStatementObj() != null)
                 {
                     generateLocalDeclarations(entry.getValue().getStatementObj(), symbolTableID, symbolTableName, label);
-                    System.out.printf("\n");
+                    //System.out.printf("\n");
                 }
 
                 // ---------------------------------------------------------------------------------- //
                 // =================================================================================== //
 
-                System.out.printf("\n");
+                //System.out.printf("\n");
             }
         }
 
-        System.out.printf("sys halt\n");
+        // Store in the stack
+        finalOutput.push("sys halt");
+
+        //System.out.printf("sys halt\n");
     }
 
     /**
@@ -162,7 +172,11 @@ public class CodeGeneration
         {
             str = "var " + id;
         }
-        System.out.printf("%s", str);
+
+        // Store in the stack
+        finalOutput.push(str);
+
+        //System.out.printf("%s", str);
     }
 
     /**
@@ -223,7 +237,7 @@ public class CodeGeneration
      * @param isCondition
      * @param statement
      */
-    private void generateLabel(String symbolTableName, String lable, boolean isCondition, String statement)
+    private void generateLabel(String symbolTableName, String lable, boolean isCondition, String statement, boolean isFunction)
     {
         // Print labels or block names
         // ---------------------------------------------------------------------------- //
@@ -231,8 +245,20 @@ public class CodeGeneration
         {
             if (!lable.equals("EXIT-IF") && !lable.equals("EXIT-ELSE"))
             {
-                String str = "label " + lable;
-                System.out.printf("%s", str);
+                if (isFunction)
+                {
+                    String str = "label " + lable;
+
+                    // Store in the stack
+                    finalOutput.push( str );
+
+                    //System.out.printf("%s", str);
+                }
+                else
+                {
+                    String str = "label " + lable;
+                    //System.out.printf("%s", str);
+                }
             }
         }
         // ---------------------------------------------------------------------------- //
@@ -296,8 +322,13 @@ public class CodeGeneration
             condStnt = gs.getCondBody();
             // -------------------------------------------------------------------------------- //
 
-            String output = condStnt + "\n" + gs.getJumpName() + " " + lblElse + "\nif-body";
-            System.out.printf("%s\n", output);
+            //String output = condStnt + "\n" + gs.getJumpName() + " " + lblElse + "\nif-body";
+            String output = condStnt + "\n" + gs.getJumpName() + " " + lblElse;
+
+            // Store in the stack
+            finalOutput.push(output);
+
+            //System.out.printf("%s\n", output);
 
             // At some point this wearable used to identify multiple IF BLOCKS
             numOf_inner_IFs++;
@@ -308,7 +339,7 @@ public class CodeGeneration
         // ---------------------------------------------------------------------------- //
         if (lable.equals("EXIT-IF") && !isCondition)
         {
-            System.out.printf("%s\n", "EXIT-IF");
+            //System.out.printf("%s\n", "EXIT-IF");
 
             // ----------------------------------------------------------- //
             // If no inner IFs "numOf_inner_IFs" should be less than 2
@@ -366,8 +397,12 @@ public class CodeGeneration
                 }
 
 
-                String output = "label " + lblExit + "\n";
-                System.out.printf("\n%s\n", output);
+                String output = "label " + lblExit;
+
+                // Store in the stack
+                finalOutput.push(output);
+
+                //System.out.printf("%s", output);
             }
             // -------------------------------------------------------------------- //
         }
@@ -425,8 +460,13 @@ public class CodeGeneration
                 labelsIf.push(lblExit);
                 // ------------------------------------------------------- //
 
-                String output = "jmp " + lblExit + "\nlabel " + lblElse + "\n" + "else-body" + "\n";
-                System.out.printf("\n%s\n", output);
+                //String output = "jmp " + lblExit + "\nlabel " + lblElse + "\n" + "else-body" + "\n";
+                String output = "jmp " + lblExit + "\n" + "label " + lblElse;
+
+                // Store in the stack
+                finalOutput.push(output);
+
+                //System.out.printf("%s", output);
             }
         }
         // ---------------------------------------------------------------------------- //
@@ -468,7 +508,11 @@ public class CodeGeneration
             // -------------------------------------------------------------------------------- //
 
             String output = "label " + lblLoop + "\n" + condStnt + "\n" + gs.getJumpName() + " " + lblExit;
-            System.out.printf("%s\n", output);
+
+            // Store in the stack
+            finalOutput.push(output);
+
+            //System.out.printf("%s\n", output);
         }
         // ---------------------------------------------------------------------------- //
     }
@@ -492,7 +536,7 @@ public class CodeGeneration
             // and based on current Condition
             // -------------------------------------------------------------------------------- //
 
-            generateLabel(null, label, isCondition, statement);
+            generateLabel(null, label, isCondition, statement, false);
         }
         else
         {
@@ -516,15 +560,21 @@ public class CodeGeneration
             // -------------------------------------------------------------------------------- //
 
             //String str = statementType + " ::: " + statement;
-            System.out.printf("%s", assignmentBody);
+
+            // Store in the stack
+            finalOutput.push(assignmentBody);
+
+            //System.out.printf("%s", assignmentBody);
         }
 
         // Currently used for testing purpose
         // If end of function
+        /*
         if (label.equals("MAIN-WRITE") && !isBeginningOfBlock)
         {
             System.out.printf("END OF FUNCTION\n");
         }
+        */
     }
 
     /**
@@ -556,7 +606,7 @@ public class CodeGeneration
         }
         catch (Exception e)
         {
-            System.out.printf("BUILD-SYS" + e.getMessage());
+            //System.out.printf("BUILD-SYS" + e.getMessage());
         }
         // ------------------------------------------------------------ //
 
@@ -583,7 +633,11 @@ public class CodeGeneration
                         if (sys != null)
                         {
                             String output = sys + " " + ids[i];
-                            System.out.printf("%s\n", output);
+
+                            // Store in the stack
+                            finalOutput.push(output);
+
+                            //System.out.printf("%s\n", output);
                         }
                     }
                 }
@@ -616,29 +670,17 @@ public class CodeGeneration
                         if (sys != null)
                         {
                             String output = sys + " " + ids[i];
-                            System.out.printf("%s\n", output);
+
+                            // Store in the stack
+                            finalOutput.push(output);
+
+                            //System.out.printf("%s\n", output);
                         }
                     }
                 }
             }
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * Check for duplicate identifiers
@@ -686,5 +728,14 @@ public class CodeGeneration
         }
 
         return duplicates;
+    }
+
+
+    public void output()
+    {
+        for (String s : finalOutput)
+        {
+            System.out.printf("%s\n", s);
+        }
     }
 }

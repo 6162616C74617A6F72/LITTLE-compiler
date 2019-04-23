@@ -108,7 +108,7 @@ public class GenerateStatement
     public void buildCondition()
     {
         // JUST TESTING
-        System.out.printf("[ %s ]\n", statement);
+        //System.out.printf("[ %s ]\n", statement);
 
         String comp = identifyComparisonSymbol();
 
@@ -338,6 +338,20 @@ public class GenerateStatement
      */
     public void buildAssignmentExpression()
     {
+        // Remove ';' from the statement
+        // ----------------------------------------------------------------------- //
+        String statementTMP = null;
+        if ( statement.charAt(statement.length() - 1) == ';' )
+        {
+            statementTMP = statement.replaceAll(";", "");
+        }
+
+        if (statementTMP != null)
+        {
+            statement = statementTMP;
+        }
+        // ----------------------------------------------------------------------- //
+
         String lType = null;
         String left = null;
         String regLeft = null;
@@ -414,7 +428,7 @@ public class GenerateStatement
      */
     public void buildSimpleAssignment(String left, String right)
     {
-        System.out.printf("[ %s := %s ]\n", left, right);
+        //System.out.printf("[ %s := %s ]\n", left, right);
 
         String rightExpr = null;
         String regRight = null;
@@ -556,7 +570,7 @@ public class GenerateStatement
      */
     public void buildComplexAssignment(String lType, String left, String right)
     {
-        System.out.printf("{ %s := %s }\n", left, right);
+        //System.out.printf("{ %s := %s }\n", left, right);
 
         String stmt[] = modifyExprInput(left, right);
 
@@ -899,14 +913,9 @@ public class GenerateStatement
         return tmp2;
     }
 
-    private String identifyID()
-    {
-        return null;
-    }
-
     private String typeTest(String id)
     {
-        System.out.printf("ID: %s\n", id);
+        //System.out.printf("ID: %s\n", id);
 
         String type = null;
 

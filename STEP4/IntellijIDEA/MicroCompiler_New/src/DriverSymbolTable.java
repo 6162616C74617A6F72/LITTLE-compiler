@@ -64,6 +64,7 @@ public class DriverSymbolTable
 
             CodeGeneration codeGeneration = new CodeGeneration(microListener.getSymbolTable());
             codeGeneration.start();
+            codeGeneration.output();
             //specialPrint(microListener.getSymbolTable());
             // ----------------------------------------------------------------------------------- //
 

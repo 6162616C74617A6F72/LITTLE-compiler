@@ -61,7 +61,7 @@ public class MicroListener extends MicroGrammarBaseListener
         String globalSTN = "Symbol table GLOBAL";
         currentSymbolTableName = globalSTN;
 
-        MicroSymbolTable mstTMP = new MicroSymbolTable("GLOBAL", globalSTN, 0);
+        MicroSymbolTable mstTMP = new MicroSymbolTable("GLOBAL", globalSTN, 0, false);
         symbolTable.put(new Integer(elementCount), mstTMP);
 
         //System.out.printf("Symbol table GLOBAL\n");
@@ -456,7 +456,7 @@ public class MicroListener extends MicroGrammarBaseListener
         String symbolTableName = "Symbol table " + funcName;
         currentSymbolTableName = symbolTableName;
 
-        MicroSymbolTable mstTMP = new MicroSymbolTable(label, symbolTableName, blockCount);
+        MicroSymbolTable mstTMP = new MicroSymbolTable(label, symbolTableName, blockCount, true);
         symbolTable.put(new Integer(elementCount), mstTMP);
 
 
@@ -543,7 +543,7 @@ public class MicroListener extends MicroGrammarBaseListener
         statementObj.setIsRead(isRead);
         statementObj.setIsWrite(isWrite);
 
-        MicroSymbolTable mstTMP = new MicroSymbolTable(label, currentSymbolTableName, blockCount);
+        MicroSymbolTable mstTMP = new MicroSymbolTable(label, currentSymbolTableName, blockCount, false);
         mstTMP.setStatementObj(statementObj);
 
         symbolTable.put(new Integer(elementCount), mstTMP);
@@ -1107,7 +1107,7 @@ public class MicroListener extends MicroGrammarBaseListener
             }
             // ---------------------------------------------------------------------------- //
 
-            MicroSymbolTable mstTMP = new MicroSymbolTable(lable, symbolTableName, blockCount);
+            MicroSymbolTable mstTMP = new MicroSymbolTable(lable, symbolTableName, blockCount, false);
             mstTMP.setStatementObj(statementObj);
 
             symbolTable.put(new Integer(elementCount), mstTMP);
@@ -1131,7 +1131,7 @@ public class MicroListener extends MicroGrammarBaseListener
         this.isBegIF = false;
         this.isBegELSE = true;
 
-        MicroSymbolTable mstTMP = new MicroSymbolTable("EXIT-IF", "EXIT-IF", blockCount);
+        MicroSymbolTable mstTMP = new MicroSymbolTable("EXIT-IF", "EXIT-IF", blockCount, false);
 
         symbolTable.put(new Integer(elementCount), mstTMP);
         elementCount++;
@@ -1170,7 +1170,7 @@ public class MicroListener extends MicroGrammarBaseListener
             currentSymbolTableName = symbolTableName;
 
             String label = stmt;
-            MicroSymbolTable mstTMP = new MicroSymbolTable(label, symbolTableName, blockCount);
+            MicroSymbolTable mstTMP = new MicroSymbolTable(label, symbolTableName, blockCount, false);
 
             symbolTable.put(new Integer(elementCount), mstTMP);
 
@@ -1193,7 +1193,7 @@ public class MicroListener extends MicroGrammarBaseListener
         this.isBegELSE = false;
         this.isBegIF = false;
 
-        MicroSymbolTable mstTMP = new MicroSymbolTable("EXIT-ELSE", "EXIT-ELSE", blockCount);
+        MicroSymbolTable mstTMP = new MicroSymbolTable("EXIT-ELSE", "EXIT-ELSE", blockCount, false);
         symbolTable.put(new Integer(elementCount), mstTMP);
         elementCount++;
     }
@@ -1276,7 +1276,7 @@ public class MicroListener extends MicroGrammarBaseListener
                 //System.out.printf("var-name is: %s\n", e.getMessage());
             }
             // ---------------------------------------------------------------------------- //
-            MicroSymbolTable mstTMP = new MicroSymbolTable(lable, symbolTableName, blockCount);
+            MicroSymbolTable mstTMP = new MicroSymbolTable(lable, symbolTableName, blockCount, false);
             mstTMP.setStatementObj(statementObj);
 
             symbolTable.put(new Integer(elementCount), mstTMP);
@@ -1296,7 +1296,7 @@ public class MicroListener extends MicroGrammarBaseListener
         this.isInWHILE = false;
         this.isEndWHILE = true;
 
-        MicroSymbolTable mstTMP = new MicroSymbolTable("EXIT-WHILE", "EXIT-WHILE", blockCount);
+        MicroSymbolTable mstTMP = new MicroSymbolTable("EXIT-WHILE", "EXIT-WHILE", blockCount, false);
 
         symbolTable.put(new Integer(elementCount), mstTMP);
         elementCount++;
