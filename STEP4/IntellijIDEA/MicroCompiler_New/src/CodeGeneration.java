@@ -313,10 +313,7 @@ public class CodeGeneration
             // Here we should call "gs.buildCondition()" function to generate condition
             // and after we have to generate labels based on current IF, ELSE or WHILE BLOCK,
             // and based on current Condition
-            // -------------------------------------------------------------------------------- //
 
-            // DEMO
-            // -------------------------------------------------------------------------------- //
             gs.updateData(condStnt, varMap);
             gs.buildCondition();
             condStnt = gs.getCondBody();

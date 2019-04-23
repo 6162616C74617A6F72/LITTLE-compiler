@@ -306,7 +306,7 @@ public class GenerateStatement
         String tmp1 = "";
         if (leftExpr != null)
         {
-            tmp1 = leftExpr;
+            tmp1 = leftExpr + "\n";
         }
         else
         {
@@ -324,7 +324,7 @@ public class GenerateStatement
         }
 
         // Generated condition body
-        condBody = tmp1 + "\n" + tmp2;
+        condBody = tmp1 + tmp2;
         compStmt = compStmt + " " + regLeft + " " + regRight;
         condBody = condBody + "\n" + compStmt;
 
