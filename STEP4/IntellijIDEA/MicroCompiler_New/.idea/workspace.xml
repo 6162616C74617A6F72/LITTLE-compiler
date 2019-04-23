@@ -19,67 +19,16 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/DriverSymbolTable.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="316">
-              <caret line="66" column="12" lean-forward="true" selection-start-line="66" selection-start-column="12" selection-end-line="66" selection-end-column="12" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="method#prettyPrint#0;class#DriverSymbolTable#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/CodeGeneration.java">
+        <entry file="file://$PROJECT_DIR$/src/MicroListener.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="318">
-              <caret line="323" selection-start-line="323" selection-end-line="323" />
+            <state relative-caret-position="-24">
+              <caret line="1330" column="6" lean-forward="true" selection-start-line="1330" selection-start-column="6" selection-end-line="1330" selection-end-column="6" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
                 <element signature="imports" expanded="true" />
-                <element signature="e#1076#1084#0" expanded="true" />
-                <element signature="e#1328#1329#0" expanded="true" />
-                <element signature="e#1358#1359#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/GenerateStatement.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="50">
-              <caret line="328" column="46" selection-start-line="328" selection-start-column="46" selection-end-line="328" selection-end-column="46" />
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-                <element signature="imports" expanded="true" />
-                <element signature="e#489#514#0" expanded="true" />
-                <element signature="e#659#676#0" expanded="true" />
-                <element signature="class#438:1033" />
-                <element signature="class#1133:1906" />
-                <element signature="e#33487#33488#0" expanded="true" />
-                <element signature="e#33631#33632#0" expanded="true" />
-                <element signature="e#33812#33813#0" expanded="true" />
-                <element signature="e#34001#34002#0" expanded="true" />
-                <element signature="e#34193#34194#0" expanded="true" />
-                <element signature="e#34369#34370#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/MicroSymbolTable.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="475">
-              <caret line="52" column="31" selection-start-line="52" selection-start-column="31" selection-end-line="52" selection-end-column="31" />
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-                <element signature="e#1551#1552#0" expanded="true" />
-                <element signature="e#1577#1578#0" expanded="true" />
+                <element signature="e#42563#42564#0" expanded="true" />
+                <element signature="e#42602#42603#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -148,7 +97,6 @@
         <option value="$PROJECT_DIR$/testfiles/Step4/test.txt" />
         <option value="$PROJECT_DIR$/src/MicroExpression.java" />
         <option value="$PROJECT_DIR$/src/CustomToken.java" />
-        <option value="$PROJECT_DIR$/src/Driver.java" />
         <option value="$PROJECT_DIR$/src/MicroParser.java" />
         <option value="$PROJECT_DIR$/src/MicroTokenizer.java" />
         <option value="$PROJECT_DIR$/src/Statement.java" />
@@ -159,8 +107,9 @@
         <option value="$PROJECT_DIR$/src/MicroSymbolTable.java" />
         <option value="$PROJECT_DIR$/src/MicroListener.java" />
         <option value="$PROJECT_DIR$/testfiles/Step4/inputs/step4_testcase.micro" />
-        <option value="$PROJECT_DIR$/src/DriverSymbolTable.java" />
         <option value="$PROJECT_DIR$/testfiles/Step4/inputs/test_combination.micro" />
+        <option value="$PROJECT_DIR$/src/Driver.java" />
+        <option value="$PROJECT_DIR$/src/DriverSymbolTable.java" />
         <option value="$PROJECT_DIR$/src/CodeGeneration.java" />
         <option value="$PROJECT_DIR$/src/GenerateStatement.java" />
       </list>
@@ -286,7 +235,7 @@
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" weight="0.204236" />
+      <window_info content_ui="combo" id="Project" order="0" weight="0.23827533" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -533,88 +482,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/CustomToken.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="100">
-          <caret line="4" column="3" selection-start-line="4" selection-start-column="3" selection-end-line="4" selection-end-column="3" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Driver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="100">
-          <caret line="4" column="3" selection-start-line="4" selection-start-column="3" selection-end-line="4" selection-end-column="3" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/MicroParser.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="100">
-          <caret line="4" column="3" selection-start-line="4" selection-start-column="3" selection-end-line="4" selection-end-column="3" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#491#492#0" expanded="true" />
-            <element signature="e#521#522#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/MicroTokenizer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="100">
-          <caret line="4" column="3" selection-start-line="4" selection-start-column="3" selection-end-line="4" selection-end-column="3" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Statement.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="100">
-          <caret line="4" column="3" selection-start-line="4" selection-start-column="3" selection-end-line="4" selection-end-column="3" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/VarDeclaration.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="175">
-          <caret line="7" column="60" selection-start-line="7" selection-start-column="60" selection-end-line="7" selection-end-column="60" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="e#822#823#0" expanded="true" />
-            <element signature="e#852#853#0" expanded="true" />
-            <element signature="e#887#888#0" expanded="true" />
-            <element signature="e#919#920#0" expanded="true" />
-            <element signature="e#955#956#0" expanded="true" />
-            <element signature="e#988#989#0" expanded="true" />
-            <element signature="e#1025#1026#0" expanded="true" />
-            <element signature="e#1061#1062#0" expanded="true" />
-            <element signature="e#1100#1101#0" expanded="true" />
-            <element signature="e#1136#1137#0" expanded="true" />
-            <element signature="e#1185#1186#0" expanded="true" />
-            <element signature="e#1222#1223#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/MicroExpression.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="100">
-          <caret line="4" column="3" selection-start-line="4" selection-start-column="3" selection-end-line="4" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/testfiles/Step4/outputs/test_expr.out">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="7">
@@ -626,61 +493,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="300">
           <caret line="47" column="50" selection-start-line="47" selection-start-column="50" selection-end-line="47" selection-end-column="50" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/MicroListener.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-8300">
-          <caret line="139" column="24" selection-start-line="139" selection-start-column="14" selection-end-line="139" selection-end-column="24" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/MicroSymbolTable.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="475">
-          <caret line="52" column="31" selection-start-line="52" selection-start-column="31" selection-end-line="52" selection-end-column="31" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="e#1551#1552#0" expanded="true" />
-            <element signature="e#1577#1578#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/DriverSymbolTable.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="316">
-          <caret line="66" column="12" lean-forward="true" selection-start-line="66" selection-start-column="12" selection-end-line="66" selection-end-column="12" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="method#prettyPrint#0;class#DriverSymbolTable#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/GenerateStatement.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="50">
-          <caret line="328" column="46" selection-start-line="328" selection-start-column="46" selection-end-line="328" selection-end-column="46" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="imports" expanded="true" />
-            <element signature="e#489#514#0" expanded="true" />
-            <element signature="e#659#676#0" expanded="true" />
-            <element signature="class#438:1033" />
-            <element signature="class#1133:1906" />
-            <element signature="e#33487#33488#0" expanded="true" />
-            <element signature="e#33631#33632#0" expanded="true" />
-            <element signature="e#33812#33813#0" expanded="true" />
-            <element signature="e#34001#34002#0" expanded="true" />
-            <element signature="e#34193#34194#0" expanded="true" />
-            <element signature="e#34369#34370#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -736,16 +548,142 @@
     <entry file="file://$PROJECT_DIR$/testfiles/Step4/inputs/test_while.micro">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/VarDeclaration.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="25">
+          <caret line="7" column="60" selection-start-line="7" selection-start-column="60" selection-end-line="7" selection-end-column="60" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/MicroSymbolTable.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="25">
+          <caret line="36" column="50" lean-forward="true" selection-start-line="36" selection-start-column="50" selection-end-line="36" selection-end-column="50" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/MicroTokenizer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="25">
+          <caret line="16" column="13" selection-start-line="16" selection-start-column="13" selection-end-line="16" selection-end-column="13" />
+          <folding>
+            <element signature="e#0#14507#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Statement.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="25">
+          <caret line="9" column="13" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/MicroParser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="25">
+          <caret line="15" column="13" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
+          <folding>
+            <element signature="e#0#1895#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/CodeGeneration.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="318">
-          <caret line="323" selection-start-line="323" selection-end-line="323" />
+        <state relative-caret-position="-3725">
+          <caret line="561" column="9" selection-start-line="561" selection-start-column="9" selection-end-line="561" selection-end-column="9" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
-            <element signature="e#1076#1084#0" expanded="true" />
-            <element signature="e#1328#1329#0" expanded="true" />
             <element signature="e#1358#1359#0" expanded="true" />
+            <element signature="e#1388#1389#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/CustomToken.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1085">
+          <caret line="12" column="13" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Driver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="63" column="111" selection-start-line="63" selection-start-column="111" selection-end-line="63" selection-end-column="111" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/DriverSymbolTable.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2349">
+          <caret line="15" column="13" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#prettyPrint#0;class#DriverSymbolTable#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/GenerateStatement.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-4424">
+          <caret line="892" column="5" selection-start-line="892" selection-start-column="5" selection-end-line="892" selection-end-column="5" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#32685#32686#0" expanded="true" />
+            <element signature="e#32721#32722#0" expanded="true" />
+            <element signature="e#32829#32830#0" expanded="true" />
+            <element signature="e#32865#32866#0" expanded="true" />
+            <element signature="e#33004#33005#0" expanded="true" />
+            <element signature="e#33046#33047#0" expanded="true" />
+            <element signature="e#33199#33200#0" expanded="true" />
+            <element signature="e#33235#33236#0" expanded="true" />
+            <element signature="e#33390#33391#0" expanded="true" />
+            <element signature="e#33427#33428#0" expanded="true" />
+            <element signature="e#33567#33568#0" expanded="true" />
+            <element signature="e#33603#33604#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/MicroExpression.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-749">
+          <caret line="4" column="3" selection-start-line="4" selection-start-column="3" selection-end-line="4" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/MicroListener.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-24">
+          <caret line="1330" column="6" lean-forward="true" selection-start-line="1330" selection-start-column="6" selection-end-line="1330" selection-end-column="6" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#42563#42564#0" expanded="true" />
+            <element signature="e#42602#42603#0" expanded="true" />
           </folding>
         </state>
       </provider>

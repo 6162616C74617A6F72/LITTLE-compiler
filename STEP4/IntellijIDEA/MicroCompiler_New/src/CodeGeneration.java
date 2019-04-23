@@ -5,7 +5,6 @@
  */
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
 
@@ -556,22 +555,11 @@ public class CodeGeneration
             }
             // -------------------------------------------------------------------------------- //
 
-            //String str = statementType + " ::: " + statement;
-
             // Store in the stack
             finalOutput.push(assignmentBody);
 
             //System.out.printf("%s", assignmentBody);
         }
-
-        // Currently used for testing purpose
-        // If end of function
-        /*
-        if (label.equals("MAIN-WRITE") && !isBeginningOfBlock)
-        {
-            System.out.printf("END OF FUNCTION\n");
-        }
-        */
     }
 
     /**

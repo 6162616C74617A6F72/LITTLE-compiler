@@ -272,7 +272,6 @@ public class GenerateStatement
         }
         else
         {
-            //leftExpr = "move " + left + " " + regLeft;
             regLeft = left;
         }
         // ------------------------------------------------------------------------------------------ //
@@ -403,9 +402,6 @@ public class GenerateStatement
         }
         // ------------------------------------------------------------------------------------------- //
 
-        //buildComplexAssignment(lType, left, right);
-
-
         // Simple assignments must be in form: a := DIGIT
         if (isComplex)
         {
@@ -428,8 +424,6 @@ public class GenerateStatement
      */
     public void buildSimpleAssignment(String left, String right)
     {
-        //System.out.printf("[ %s := %s ]\n", left, right);
-
         String rightExpr = null;
         String regRight = null;
 
@@ -444,9 +438,6 @@ public class GenerateStatement
 
     private String[] modifyExprInput(String left, String right)
     {
-        // JUSt TESTING
-        //System.out.printf("[ %s := %s ]\n", left, right);
-
         // Adding new-line, later it will help us to rebuild digits in this input-line
         right = right + "\n";
 
@@ -520,7 +511,6 @@ public class GenerateStatement
                         stmt[i].equals("(") || stmt[i].equals(")")
                     )
                 {
-                    //System.out.printf("[0]: TEST: %s\n", stmt[i]);
                     break;
                 }
                 else
@@ -532,7 +522,6 @@ public class GenerateStatement
                     }
                     else
                     {
-                        //System.out.printf("[1]: TEST: %s\n", stmt[i]);
                         newID = newID + stmt[i];
                         stmt[i] = "";
                     }
@@ -544,20 +533,10 @@ public class GenerateStatement
             {
                 stmt[i-1] = newID;
             }
-
-
-            //System.out.printf("NEW-ID: %s\n", newID);
         }
 
 
         stmt = cleaningUpArray(stmt);
-
-        /*
-        for (int i = 0; i < stmt.length; i++)
-        {
-            System.out.printf("*** %s\n", stmt[i]);
-        }
-        */
 
         return stmt;
     }
@@ -570,8 +549,6 @@ public class GenerateStatement
      */
     public void buildComplexAssignment(String lType, String left, String right)
     {
-        //System.out.printf("{ %s := %s }\n", left, right);
-
         String stmt[] = modifyExprInput(left, right);
 
         String newExpression = "";
@@ -906,7 +883,6 @@ public class GenerateStatement
         for (MicroExpression me : stackOFMicroExpr)
         {
             tmp2 = tmp2 + me.getTinyCode();
-            //System.out.printf("%s\n", me.getTinyCode());
         }
         tmp2 = tmp2 + tmp1;
 
@@ -915,8 +891,6 @@ public class GenerateStatement
 
     private String typeTest(String id)
     {
-        //System.out.printf("ID: %s\n", id);
-
         String type = null;
 
         if (isINT(id))
