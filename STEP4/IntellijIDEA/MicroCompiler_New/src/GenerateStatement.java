@@ -107,73 +107,93 @@ public class GenerateStatement
      */
     public void buildCondition()
     {
-        // JUSt TESTING
+        // JUST TESTING
         System.out.printf("[ %s ]\n", statement);
 
+        String comp = identifyComparisonSymbol();
+
         char smt[] = statement.toCharArray();
-        boolean isFound = false;
-        String comp = null;
         String tmpJump = null;
 
-        // Identifying comparison symbol
+        // Identifying comparison label-name
         // ------------------------------------------------------------------------------------------ //
-        for (int i = 0; i < smt.length; i++)
+        for (Map.Entry<String, String> entry : conditionsMap.entrySet())
         {
-            String s1 = Character.toString(smt[i]);
+            if (comp.equals(entry.getKey()))
+            {
+                tmpJump = entry.getValue();
+            }
+        }
+        // ------------------------------------------------------------------------------------------ //
 
-            // Loop via all conditions symbols
+        // Continue generating comparison code
+        if (comp != null && tmpJump != null)
+        {
+            this.jumpName = tmpJump;
+            generateCondition(smt, comp);
+        }
+    }
+
+    /**
+     * This function is used to identifying comparison symbol
+     * @return
+     */
+    private String identifyComparisonSymbol()
+    {
+        String stmt[] = statement.split("");
+        String compTmp = null;
+        String comp = null;
+        int index = -1;
+        boolean found = false;
+
+        for (int i = 0; i < stmt.length; i++)
+        {
             for (Map.Entry<String, String> entry : conditionsMap.entrySet())
             {
-                if (s1.equals(entry.getKey()))
+                String str = Character.toString(entry.getKey().charAt(0));
+                if (stmt[i].equals(str))
                 {
-                    comp = entry.getKey();
-                    tmpJump = entry.getValue();
-                    isFound = true;
+                    comp = stmt[i];
+                    index = i;
+                    found = true;
                     break;
                 }
                 else
                 {
                     comp = null;
-                    tmpJump = null;
-                }
-
-                // Some comparison statement can have two chars: <=, =>, !=
-                // so we have to test it out
-                String s2 = "";
-                if ( (i + 1) <=  (smt.length - 1) )
-                {
-                    s2 = Character.toString(smt[i + 1]);
-                    comp = s1 + "" + s2;
-
-                    if (comp.equals(entry.getKey()))
-                    {
-                        comp = entry.getKey();
-                        tmpJump = entry.getValue();
-                        isFound = true;
-                        break;
-                    }
-                    else
-                    {
-                        comp = null;
-                        tmpJump = null;
-                    }
+                    found = false;
                 }
             }
 
-            if (isFound)
+            if (found)
             {
                 break;
             }
         }
-        // ------------------------------------------------------------------------------------------ //
+        found = false;
 
-        if (comp != null && tmpJump != null)
+        for (Map.Entry<String, String> entry : conditionsMap.entrySet())
         {
-            this.jumpName = tmpJump;
-
-            System.out.printf(" \t---> [ %s ] <---\n", comp);
-            generateCondition(smt, comp);
+            String tmp = (comp + stmt[index + 1]);
+            if (tmp.equals(entry.getKey()))
+            {
+                compTmp = entry.getKey();
+                found = true;
+                break;
+            }
+            else
+            {
+                compTmp = null;
+                found = false;
+            }
         }
+
+        if (found)
+        {
+            comp = compTmp;
+        }
+
+        return comp;
     }
 
     /**
@@ -197,10 +217,6 @@ public class GenerateStatement
         left = tmp[0];
         right = tmp[1];
 
-        System.out.printf(" \t===> [ %s ] <===\n", comp);
-        System.out.printf(" \t===> [ %s ] <===\n", left);
-        System.out.printf(" \t===> [ %s ] <===\n", right);
-
         // Testing
         isLiteral(left);
         isLiteral(right);
@@ -222,7 +238,6 @@ public class GenerateStatement
             // Get pre-generated register
             regLeft = findReg(left);
         }
-        //System.out.printf("*** %s: %s\n", left, lType);
         // ------------------------------------------------------------------------------------------- //
 
         // Testing right side of the comparison expression
@@ -243,7 +258,6 @@ public class GenerateStatement
             regRight = findReg(right);
 
         }
-        //System.out.printf("*** %s: %s\n", right, rType);
         // ------------------------------------------------------------------------------------------- //
 
         // Generating left-side of the condition
@@ -355,7 +369,6 @@ public class GenerateStatement
             // Get pre-generated register
             regLeft = findReg(left);
         }
-        //System.out.printf("*** %s: %s\n", left, lType);
         // ------------------------------------------------------------------------------------------- //
 
         // Testing right side of the assignment expression
@@ -413,14 +426,12 @@ public class GenerateStatement
         // Generated assignment body
         assignmentBody = rightExpr + "\n";
         assignmentBody = assignmentBody + "move " + regRight + " " + left;
-
-        //System.out.printf("%s\n", assignmentBody);
     }
 
     private String[] modifyExprInput(String left, String right)
     {
         // JUSt TESTING
-        System.out.printf("[ %s := %s ]\n", left, right);
+        //System.out.printf("[ %s := %s ]\n", left, right);
 
         // Adding new-line, later it will help us to rebuild digits in this input-line
         right = right + "\n";
@@ -481,6 +492,59 @@ public class GenerateStatement
 
         stmt = cleaningUpArray(stmt);
 
+
+        // Some IDs can be larger that single character,
+        // so we have to properly identify such Ids
+        for (int i = 0; i < stmt.length; i++)
+        {
+            String newID = "";
+            while ( i < stmt.length )
+            {
+                if (
+                        stmt[i].equals("+") || stmt[i].equals("-") ||
+                        stmt[i].equals("*") || stmt[i].equals("/") ||
+                        stmt[i].equals("(") || stmt[i].equals(")")
+                    )
+                {
+                    //System.out.printf("[0]: TEST: %s\n", stmt[i]);
+                    break;
+                }
+                else
+                {
+                    if (newID.equals(""))
+                    {
+                        newID = stmt[i];
+                        stmt[i] = "";
+                    }
+                    else
+                    {
+                        //System.out.printf("[1]: TEST: %s\n", stmt[i]);
+                        newID = newID + stmt[i];
+                        stmt[i] = "";
+                    }
+                }
+                i++;
+            }
+
+            if (!newID.equals(""))
+            {
+                stmt[i-1] = newID;
+            }
+
+
+            //System.out.printf("NEW-ID: %s\n", newID);
+        }
+
+
+        stmt = cleaningUpArray(stmt);
+
+        /*
+        for (int i = 0; i < stmt.length; i++)
+        {
+            System.out.printf("*** %s\n", stmt[i]);
+        }
+        */
+
         return stmt;
     }
 
@@ -492,6 +556,8 @@ public class GenerateStatement
      */
     public void buildComplexAssignment(String lType, String left, String right)
     {
+        System.out.printf("{ %s := %s }\n", left, right);
+
         String stmt[] = modifyExprInput(left, right);
 
         String newExpression = "";
@@ -638,13 +704,8 @@ public class GenerateStatement
                 // ------------------------------------------------------------------------ //
 
                 // Generating Tiny code for this pair of variables
-                // ------------------------------------------------------------------------ //
-                //System.out.printf("ID1: %s --- %s\n", id1, id1Type);
-                //System.out.printf("arithmetic symbol: %s\n", arithmeticSymbol);
-                //System.out.printf("command: %s\n", command);
-                //System.out.printf("ID2: %s --- %s\n", id2, id2Type);
+                // ------------------------------------------------------------------------ //;
 
-                //microExpressionMap
                 String microExpr = null;
 
                 int regNum1 = registerCount;
@@ -676,18 +737,6 @@ public class GenerateStatement
                 // ------------------------------------------------------------------------ //
             }
         }
-
-        /*
-        System.out.printf("multiply-divide\n----------\n");
-        for (int i = 0; i < stmt.length; i++)
-        {
-            if (!stmt[i].equals(""))
-            {
-                System.out.printf("%s\n", stmt[i]);
-            }
-        }
-        System.out.printf("----------\n");
-        */
 
         // Cleaning up stmt from empty strings
         // and returning it
@@ -758,12 +807,7 @@ public class GenerateStatement
 
                 // Generating Tiny code for this pair of variables
                 // ------------------------------------------------------------------------ //
-                //System.out.printf("ID1: %s --- %s\n", id1, id1Type);
-                //System.out.printf("arithmetic symbol: %s\n", arithmeticSymbol);
-                //System.out.printf("command: %s\n", command);
-                //System.out.printf("ID2: %s --- %s\n", id2, id2Type);
 
-                //microExpressionMap
                 String microExpr = null;
 
                 int regNum1 = registerCount;
@@ -795,18 +839,6 @@ public class GenerateStatement
                 // ------------------------------------------------------------------------ //
             }
         }
-
-        /*
-        System.out.printf("add-subtract\n----------\n");
-        for (int i = 0; i < stmt.length; i++)
-        {
-            if (!stmt[i].equals(""))
-            {
-                System.out.printf("%s\n", stmt[i]);
-            }
-        }
-        System.out.printf("----------\n");
-        */
 
         // Cleaning up stmt from empty strings
         // and returning it
@@ -867,8 +899,15 @@ public class GenerateStatement
         return tmp2;
     }
 
+    private String identifyID()
+    {
+        return null;
+    }
+
     private String typeTest(String id)
     {
+        System.out.printf("ID: %s\n", id);
+
         String type = null;
 
         if (isINT(id))
