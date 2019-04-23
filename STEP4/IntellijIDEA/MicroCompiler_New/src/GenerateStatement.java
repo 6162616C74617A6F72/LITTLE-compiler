@@ -107,69 +107,93 @@ public class GenerateStatement
      */
     public void buildCondition()
     {
+        // JUST TESTING
+        //System.out.printf("[ %s ]\n", statement);
+
+        String comp = identifyComparisonSymbol();
+
         char smt[] = statement.toCharArray();
-        boolean isFound = false;
-        String comp = null;
         String tmpJump = null;
 
-        // Identifying comparison symbol
+        // Identifying comparison label-name
         // ------------------------------------------------------------------------------------------ //
-        for (int i = 0; i < smt.length; i++)
+        for (Map.Entry<String, String> entry : conditionsMap.entrySet())
         {
-            String s1 = Character.toString(smt[i]);
+            if (comp.equals(entry.getKey()))
+            {
+                tmpJump = entry.getValue();
+            }
+        }
+        // ------------------------------------------------------------------------------------------ //
 
-            // Loop via all conditions symbols
+        // Continue generating comparison code
+        if (comp != null && tmpJump != null)
+        {
+            this.jumpName = tmpJump;
+            generateCondition(smt, comp);
+        }
+    }
+
+    /**
+     * This function is used to identifying comparison symbol
+     * @return
+     */
+    private String identifyComparisonSymbol()
+    {
+        String stmt[] = statement.split("");
+        String compTmp = null;
+        String comp = null;
+        int index = -1;
+        boolean found = false;
+
+        for (int i = 0; i < stmt.length; i++)
+        {
             for (Map.Entry<String, String> entry : conditionsMap.entrySet())
             {
-                if (s1.equals(entry.getKey()))
+                String str = Character.toString(entry.getKey().charAt(0));
+                if (stmt[i].equals(str))
                 {
-                    comp = entry.getKey();
-                    tmpJump = entry.getValue();
-                    isFound = true;
+                    comp = stmt[i];
+                    index = i;
+                    found = true;
                     break;
                 }
                 else
                 {
                     comp = null;
-                    tmpJump = null;
-                }
-
-                // Some comparison statement can have two chars: <=, =>, !=
-                // so we have to test it out
-                String s2 = "";
-                if ( (i + 1) <=  (smt.length - 1) )
-                {
-                    s2 = Character.toString(smt[i + 1]);
-                    comp = s1 + "" + s2;
-
-                    if (comp.equals(entry.getKey()))
-                    {
-                        comp = entry.getKey();
-                        tmpJump = entry.getValue();
-                        isFound = true;
-                        break;
-                    }
-                    else
-                    {
-                        comp = null;
-                        tmpJump = null;
-                    }
+                    found = false;
                 }
             }
 
-            if (isFound)
+            if (found)
             {
                 break;
             }
         }
-        // ------------------------------------------------------------------------------------------ //
+        found = false;
 
-        if (comp != null && tmpJump != null)
+        for (Map.Entry<String, String> entry : conditionsMap.entrySet())
         {
-            this.jumpName = tmpJump;
-
-            generateCondition(smt, comp);
+            String tmp = (comp + stmt[index + 1]);
+            if (tmp.equals(entry.getKey()))
+            {
+                compTmp = entry.getKey();
+                found = true;
+                break;
+            }
+            else
+            {
+                compTmp = null;
+                found = false;
+            }
         }
+
+        if (found)
+        {
+            comp = compTmp;
+        }
+
+        return comp;
     }
 
     /**
@@ -214,7 +238,6 @@ public class GenerateStatement
             // Get pre-generated register
             regLeft = findReg(left);
         }
-        //System.out.printf("*** %s: %s\n", left, lType);
         // ------------------------------------------------------------------------------------------- //
 
         // Testing right side of the comparison expression
@@ -235,7 +258,6 @@ public class GenerateStatement
             regRight = findReg(right);
 
         }
-        //System.out.printf("*** %s: %s\n", right, rType);
         // ------------------------------------------------------------------------------------------- //
 
         // Generating left-side of the condition
@@ -250,7 +272,6 @@ public class GenerateStatement
         }
         else
         {
-            //leftExpr = "move " + left + " " + regLeft;
             regLeft = left;
         }
         // ------------------------------------------------------------------------------------------ //
@@ -284,7 +305,7 @@ public class GenerateStatement
         String tmp1 = "";
         if (leftExpr != null)
         {
-            tmp1 = leftExpr;
+            tmp1 = leftExpr + "\n";
         }
         else
         {
@@ -302,7 +323,7 @@ public class GenerateStatement
         }
 
         // Generated condition body
-        condBody = tmp1 + "\n" + tmp2;
+        condBody = tmp1 + tmp2;
         compStmt = compStmt + " " + regLeft + " " + regRight;
         condBody = condBody + "\n" + compStmt;
 
@@ -316,6 +337,20 @@ public class GenerateStatement
      */
     public void buildAssignmentExpression()
     {
+        // Remove ';' from the statement
+        // ----------------------------------------------------------------------- //
+        String statementTMP = null;
+        if ( statement.charAt(statement.length() - 1) == ';' )
+        {
+            statementTMP = statement.replaceAll(";", "");
+        }
+
+        if (statementTMP != null)
+        {
+            statement = statementTMP;
+        }
+        // ----------------------------------------------------------------------- //
+
         String lType = null;
         String left = null;
         String regLeft = null;
@@ -347,7 +382,6 @@ public class GenerateStatement
             // Get pre-generated register
             regLeft = findReg(left);
         }
-        //System.out.printf("*** %s: %s\n", left, lType);
         // ------------------------------------------------------------------------------------------- //
 
         // Testing right side of the assignment expression
@@ -379,6 +413,7 @@ public class GenerateStatement
             // Building simple assignment
             buildSimpleAssignment(left, right);
         }
+
     }
 
     /**
@@ -399,8 +434,111 @@ public class GenerateStatement
         // Generated assignment body
         assignmentBody = rightExpr + "\n";
         assignmentBody = assignmentBody + "move " + regRight + " " + left;
+    }
 
-        //System.out.printf("%s\n", assignmentBody);
+    private String[] modifyExprInput(String left, String right)
+    {
+        // Adding new-line, later it will help us to rebuild digits in this input-line
+        right = right + "\n";
+
+        // Splitting up string-line into individual characters
+        String stmt[] = right.split("");
+
+        // This string will store digit
+        String tmpDigit = "";
+        int startIndex = 0;
+        int endIndex = 0;
+        int range = 0;
+        String symbols[] = {"+", "-", "*", "/", "(", ")"};
+
+        // When converting into string array,
+        // extra check must be developed to capture entire number
+        // currently program missing full length of digit
+        for (int i = 0; i < stmt.length; i++)
+        {
+            if (stmt[i].matches("[0-9]"))
+            {
+                // Storing beginning of a digit
+                startIndex = i;
+                boolean stop = false;
+
+                // Looking for the end of a digit
+                for (int j = i; j < stmt.length; j++)
+                {
+                    // Loop via all symbols to find match
+                    for (int k = 0; k < symbols.length; k++)
+                    {
+                        if (stmt[j].equals(symbols[k]) || stmt[j].equals("\n"))
+                        {
+                            endIndex = j - 1;
+                            stop = true;
+                            break;
+                        }
+                    }
+
+                    if (stop)
+                    {
+                        break;
+                    }
+                }
+
+                for (i = startIndex; i <= endIndex; i++)
+                {
+                    tmpDigit = tmpDigit + stmt[i];
+                    stmt[i] = "";
+                }
+                stmt[endIndex] = tmpDigit;
+            }
+
+            tmpDigit = "";
+            startIndex = 0;
+            endIndex = 0;
+        }
+
+        stmt = cleaningUpArray(stmt);
+
+
+        // Some IDs can be larger that single character,
+        // so we have to properly identify such Ids
+        for (int i = 0; i < stmt.length; i++)
+        {
+            String newID = "";
+            while ( i < stmt.length )
+            {
+                if (
+                        stmt[i].equals("+") || stmt[i].equals("-") ||
+                        stmt[i].equals("*") || stmt[i].equals("/") ||
+                        stmt[i].equals("(") || stmt[i].equals(")")
+                    )
+                {
+                    break;
+                }
+                else
+                {
+                    if (newID.equals(""))
+                    {
+                        newID = stmt[i];
+                        stmt[i] = "";
+                    }
+                    else
+                    {
+                        newID = newID + stmt[i];
+                        stmt[i] = "";
+                    }
+                }
+                i++;
+            }
+
+            if (!newID.equals(""))
+            {
+                stmt[i-1] = newID;
+            }
+        }
+
+
+        stmt = cleaningUpArray(stmt);
+
+        return stmt;
     }
 
     /**
@@ -411,61 +549,93 @@ public class GenerateStatement
      */
     public void buildComplexAssignment(String lType, String left, String right)
     {
-        System.out.printf("[ %s := %s ]\n", left, right);
+        String stmt[] = modifyExprInput(left, right);
 
-        boolean hasBrackets = false;
-        char stm[] = right.toCharArray();
-        String stmt[] = new String[stm.length];
-
-        // Build array of string for each token in the statement expression
-        for (int i = 0; i < stm.length; i++)
+        String newExpression = "";
+        String exprTmp[] = new String[stmt.length];
+        int exprTmpCount = 0;
+        int indexStart = 0;
+        int indexEnd = 0;
+        boolean subExpr = false;
+        for (int i = 0; i < stmt.length; i++)
         {
-            stmt[i] = Character.toString(stm[i]);
-        }
-
-        for (int i = 0; i < stm.length; i++)
-        {
-            if (stm[i] == '(' || stm[i] == ')')
+            // We have to in the first place compute expression between brackets
+            if (stmt[i].equals("(") || stmt[i].equals(")"))
             {
-                hasBrackets = true;
-                break;
+                String tmp = "";
+                // We have to identify beginning of the expression
+                // between brackets
+                if (stmt[i].equals("("))
+                {
+                    indexStart = i + 1;
+                    subExpr = true;
+                }
+                if (stmt[i].equals(")"))
+                {
+                    indexEnd = i;
+                    subExpr = false;
+
+                    // Build new sub-expression
+                    // ---------------------------------------------- //
+                    int arrSize = indexEnd - indexStart;
+                    int countTmp = 0;
+                    String subExprTMP[] = new String[arrSize];
+                    for (int j = indexStart; j < indexEnd; j++)
+                    {
+                        subExprTMP[countTmp] = stmt[j];
+                        countTmp++;
+                    }
+                    // ---------------------------------------------- //
+
+                    // Computing sub-expression
+                    // ------------------------------------------------------------------------- //
+                    // Working on [*] and [/]
+                    // will return modified array of strings
+                    subExprTMP = multiplyDivide(subExprTMP);
+
+                    // Working on [+] and [-]
+                    // will return void because eliminating [+] and [-] should be final stage
+                    subExprTMP = addSubtract(subExprTMP);
+                    // ------------------------------------------------------------------------- //
+
+                    // Replace closing bracket of the current sub-expressions with
+                    // register which will store sub-expression computation result
+                    stmt[i] = subExprTMP[0];
+                    i--;
+                }
             }
             else
             {
-                hasBrackets = false;
+                if (!subExpr)
+                {
+                    exprTmp[exprTmpCount] = stmt[i];
+                    exprTmpCount++;
+                }
             }
         }
 
-        if (!hasBrackets)
-        {
-            String tmp[] = null;
+        // Re-build exprTmp array, and remove all empty and null records
+        exprTmp = cleaningUpArray(exprTmp);
 
-            // Working on [*] and [/]
-            // will return modified array of strings
-            tmp = multiplyDivide(stmt);
+        // Final stage, the exprTmp should not contain any brackets
+        // Working on [*] and [/]
+        // will return modified array of strings
+        exprTmp = multiplyDivide(exprTmp);
 
-            // Working on [+] and [-]
-            // will return void because eliminating [+] and [-] should be final stage
-            tmp = addSubtract(tmp);
+        // Working on [+] and [-]
+        // will return void because eliminating [+] and [-] should be final stage
+        exprTmp = addSubtract(exprTmp);
 
-            // Store the least generated register in the right side of expression
-            // basically store in in the final variable
-            assignmentBody = finalAssignment(left, tmp);
+        // Store the least generated register in the right side of expression
+        // basically store in in the final variable
+        assignmentBody = finalAssignment(left, exprTmp);
 
-        }
-        else
-        {
-            // Do something if expression has brackets
-        }
-
-        //assignmentBody = null;
     }
 
     private String[] multiplyDivide(String stmt[])
     {
         MicroExpression microExpression = null;
 
-        String tmp = null;
         for (int i = 0; i < stmt.length; i++)
         {
             String arithmeticSymbol = null;
@@ -525,13 +695,8 @@ public class GenerateStatement
                 // ------------------------------------------------------------------------ //
 
                 // Generating Tiny code for this pair of variables
-                // ------------------------------------------------------------------------ //
-                //System.out.printf("ID1: %s --- %s\n", id1, id1Type);
-                //System.out.printf("arithmetic symbol: %s\n", arithmeticSymbol);
-                //System.out.printf("command: %s\n", command);
-                //System.out.printf("ID2: %s --- %s\n", id2, id2Type);
+                // ------------------------------------------------------------------------ //;
 
-                //microExpressionMap
                 String microExpr = null;
 
                 int regNum1 = registerCount;
@@ -564,18 +729,6 @@ public class GenerateStatement
             }
         }
 
-        /*
-        System.out.printf("multiply-divide\n----------\n");
-        for (int i = 0; i < stmt.length; i++)
-        {
-            if (!stmt[i].equals(""))
-            {
-                System.out.printf("%s\n", stmt[i]);
-            }
-        }
-        System.out.printf("----------\n");
-        */
-
         // Cleaning up stmt from empty strings
         // and returning it
         return cleaningUpArray(stmt);
@@ -585,7 +738,6 @@ public class GenerateStatement
     {
         MicroExpression microExpression = null;
 
-        String tmp = null;
         for (int i = 0; i < stmt.length; i++)
         {
             String arithmeticSymbol = null;
@@ -646,12 +798,7 @@ public class GenerateStatement
 
                 // Generating Tiny code for this pair of variables
                 // ------------------------------------------------------------------------ //
-                //System.out.printf("ID1: %s --- %s\n", id1, id1Type);
-                //System.out.printf("arithmetic symbol: %s\n", arithmeticSymbol);
-                //System.out.printf("command: %s\n", command);
-                //System.out.printf("ID2: %s --- %s\n", id2, id2Type);
 
-                //microExpressionMap
                 String microExpr = null;
 
                 int regNum1 = registerCount;
@@ -684,18 +831,6 @@ public class GenerateStatement
             }
         }
 
-        /*
-        System.out.printf("add-subtract\n----------\n");
-        for (int i = 0; i < stmt.length; i++)
-        {
-            if (!stmt[i].equals(""))
-            {
-                System.out.printf("%s\n", stmt[i]);
-            }
-        }
-        System.out.printf("----------\n");
-        */
-
         // Cleaning up stmt from empty strings
         // and returning it
         return cleaningUpArray(stmt);
@@ -709,9 +844,12 @@ public class GenerateStatement
         int newSize = 0;
         for (int i = 0; i < stmt.length; i++)
         {
-            if (!stmt[i].equals(""))
+            if (stmt[i] != null)
             {
-                newSize++;
+                if (!stmt[i].equals("") && !stmt[i].equals("\n"))
+                {
+                    newSize++;
+                }
             }
         }
 
@@ -719,10 +857,13 @@ public class GenerateStatement
         int count = 0;
         for (int i = 0; i < stmt.length; i++)
         {
-            if (!stmt[i].equals(""))
+            if (stmt[i] != null)
             {
-                output[count] = stmt[i];
-                count++;
+                if (!stmt[i].equals("") && !stmt[i].equals("\n"))
+                {
+                    output[count] = stmt[i];
+                    count++;
+                }
             }
         }
         // --------------------------------------------------------------------------------- //
@@ -742,7 +883,6 @@ public class GenerateStatement
         for (MicroExpression me : stackOFMicroExpr)
         {
             tmp2 = tmp2 + me.getTinyCode();
-            //System.out.printf("%s\n", me.getTinyCode());
         }
         tmp2 = tmp2 + tmp1;
 

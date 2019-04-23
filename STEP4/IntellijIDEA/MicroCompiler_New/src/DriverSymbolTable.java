@@ -9,10 +9,7 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.net.URL;
-import java.security.Key;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,11 +57,9 @@ public class DriverSymbolTable
             // Print symbol table for STEP 4
             // and generate tiny programming language
             // ----------------------------------------------------------------------------------- //
-            //print(microListener.getSymbolTable());
-
             CodeGeneration codeGeneration = new CodeGeneration(microListener.getSymbolTable());
             codeGeneration.start();
-            //specialPrint(microListener.getSymbolTable());
+            codeGeneration.output();
             // ----------------------------------------------------------------------------------- //
 
         }
@@ -135,118 +130,6 @@ public class DriverSymbolTable
             }
         }
 
-    }
-
-
-    /**
-     * IS JUST DEMO: Print symbol table for STEP 4
-     * @param tmp: Map<Integer, MicroSymbolTable>
-     */
-    private void print(Map<Integer, MicroSymbolTable> tmp)
-    {
-        // Check if symbol table get duplicate identifiers
-        // if there are duplicate identifiers, then print and error message
-        Map<String, MicroSymbolTable> duplicates = duplicateCheck(tmp);
-        if (duplicates != null)
-        {
-            for (Map.Entry<String, MicroSymbolTable> entry : duplicates.entrySet())
-            {
-                System.out.printf("DECLARATION ERROR %s\n", entry.getKey());
-            }
-        }
-
-        // If no duplicate identifiers print symbol table
-        if (duplicates == null)
-        {
-            // This counter used to specify where we should print extra new-line
-            int countSymTable = 0;
-
-            for (Map.Entry<Integer, MicroSymbolTable> entry : tmp.entrySet())
-            {
-                int symbolTableID = entry.getValue().getSymbolTableId();
-                String symbolTable = entry.getValue().getSymbolTableName();
-
-                String name = entry.getValue().getName();
-                String type = entry.getValue().getType();
-                String value = entry.getValue().getValue();
-
-                String nl = "";
-
-                // Checking if we need to print extra newline
-                // ================================================================================= //
-                if (symbolTable != null)
-                {
-                    // Printing extra new-line or not
-                    if(countSymTable == 0)
-                    {
-                        nl = "";
-                    }
-                    else if(countSymTable > 0)
-                    {
-                        nl = "\n";
-                    }
-                    countSymTable++;
-
-                    // Printing symbol-table
-                    System.out.printf("%s[%d]: %s\n", nl, symbolTableID, symbolTable);
-
-                    // Printing statements
-                    // ---------------------------------------------------------------------------------- //
-                    if(entry.getValue().getStatementObj() != null)
-                    {
-                        String lable = entry.getValue().getStatementObj().getLabelName();
-                        String statement = null;
-                        if(entry.getValue().getStatementObj().isCondition())
-                        {
-                            statement = "condition";
-                        }
-                        else
-                        {
-                            statement = "assignment";
-                        }
-                        String strOut = entry.getValue().getStatementObj().getStatement();
-
-                        boolean isBeginningOfBlock = entry.getValue().getStatementObj().isBeginningOfBlock();
-                        System.out.printf("\t\tBLOCK BEGINNING: %b\n", isBeginningOfBlock);
-
-                        System.out.printf("\t\t%s --- %s: %s\n", lable, statement, strOut);
-                    }
-                    // ---------------------------------------------------------------------------------- //
-                }
-                // ================================================================================= //
-
-                // Printing strings declarations
-                // This IF block, is for STRING type because usually STRING go with some value
-                // ---------------------------------------------------------------------------------- //
-                if (name != null && type != null && value != null)
-                {
-                    String str = "name " + name + " type " + type + " value " + value;
-                    System.out.printf("[%d]: %s\n", symbolTableID, str);
-                }
-                // ---------------------------------------------------------------------------------- //
-
-                // Printing variables declarations
-                // This IF block, is for INT and FLOAT types
-                // ---------------------------------------------------------------------------------- //
-                if (name != null && type != null && value == null)
-                {
-                    String str = "name " + name + " type " + type;
-                    System.out.printf("[%d]: %s\n", symbolTableID, str);
-                }
-                // ---------------------------------------------------------------------------------- //
-                // ================================================================================= //
-            }
-        }
-
-    }
-
-
-    private void specialPrint(Map<Integer, MicroSymbolTable> tmp)
-    {
-        for (Map.Entry<Integer, MicroSymbolTable> entry : tmp.entrySet())
-        {
-            System.out.printf("[%d]\n", entry.getKey());
-        }
     }
 
     /**
