@@ -135,68 +135,6 @@ public class GenerateStatement
     }
 
     /**
-     * This function is used to identifying comparison symbol
-     * @return
-     */
-    private String identifyComparisonSymbol()
-    {
-        String stmt[] = statement.split("");
-        String compTmp = null;
-        String comp = null;
-        int index = -1;
-        boolean found = false;
-
-        for (int i = 0; i < stmt.length; i++)
-        {
-            for (Map.Entry<String, String> entry : conditionsMap.entrySet())
-            {
-                String str = Character.toString(entry.getKey().charAt(0));
-                if (stmt[i].equals(str))
-                {
-                    comp = stmt[i];
-                    index = i;
-                    found = true;
-                    break;
-                }
-                else
-                {
-                    comp = null;
-                    found = false;
-                }
-            }
-
-            if (found)
-            {
-                break;
-            }
-        }
-        found = false;
-
-        for (Map.Entry<String, String> entry : conditionsMap.entrySet())
-        {
-            String tmp = (comp + stmt[index + 1]);
-            if (tmp.equals(entry.getKey()))
-            {
-                compTmp = entry.getKey();
-                found = true;
-                break;
-            }
-            else
-            {
-                compTmp = null;
-                found = false;
-            }
-        }
-
-        if (found)
-        {
-            comp = compTmp;
-        }
-
-        return comp;
-    }
-
-    /**
      * Is used to build condition 3AC: PART 2
      * @param smt
      * @param comp
@@ -217,48 +155,90 @@ public class GenerateStatement
         left = tmp[0];
         right = tmp[1];
 
-        // Testing
-        isLiteral(left);
-        isLiteral(right);
+        boolean isLeftComplex = true;
+        boolean isRightComplex = true;
 
         // Testing left side of the comparison expression
         // ------------------------------------------------------------------------------------------- //
         if (isINT(left))
         {
             lType = "INT";
+            isLeftComplex = false;
         }
         else if (isFLOAT(left))
         {
             lType = "FLOAT";
+            isLeftComplex = false;
         }
         else if (isLiteral(left))
         {
-            lType = findType(left);
-
-            // Get pre-generated register
-            regLeft = findReg(left);
+            lType = findTypeByID(left);
+            if (lType == null)
+            {
+                isLeftComplex = true;
+            }
+            else
+            {
+                isLeftComplex = false;
+            }
         }
         // ------------------------------------------------------------------------------------------- //
 
-        // Testing right side of the comparison expression
+        // Testing right side of the assignment expression
         // ------------------------------------------------------------------------------------------- //
         if (isINT(right))
         {
             rType = "INT";
+            isRightComplex = false;
         }
         else if (isFLOAT(right))
         {
             rType = "FLOAT";
+            isRightComplex = false;
         }
         else if (isLiteral(right))
         {
-            rType = findType(right);
-
-            // Get pre-generated register
-            regRight = findReg(right);
-
+            rType = findTypeByID(right);
+            if (rType == null)
+            {
+                isRightComplex = true;
+            }
+            else
+            {
+                isRightComplex = false;
+            }
         }
         // ------------------------------------------------------------------------------------------- //
+
+        // Simple assignments must be in form: a := DIGIT
+        if (isLeftComplex || isRightComplex)
+        {
+            // Building complex assignment
+            buildComplexCondition(left, right, comp);
+        }
+        else if (!isLeftComplex && !isRightComplex)
+        {
+            // Building simple assignment
+            buildSimpleCondition(left, right, comp, lType, rType);
+        }
+    }
+
+    /**
+     * This function is used to handle simple conditions, such as "a > b" or
+     * "b >= 10"
+     * @param left
+     * @param right
+     * @param comp
+     * @param lType
+     * @param rType
+     */
+    private void buildSimpleCondition(String left, String right, String comp, String lType, String rType)
+    {
+        String regLeft = null;
+        String regRight = null;
+
+        regLeft = findID(left);
+        regRight = findID(right);
 
         // Generating left-side of the condition
         // But before we have to make sure that map of all variables does not include
@@ -326,7 +306,161 @@ public class GenerateStatement
         condBody = tmp1 + tmp2;
         compStmt = compStmt + " " + regLeft + " " + regRight;
         condBody = condBody + "\n" + compStmt;
+    }
 
+    /**
+     * This function is used to handle complex conditions, such as "a > (b - c)" or
+     * z != (b * a)
+     * @param left
+     * @param right
+     * @param comp
+     */
+    private void buildComplexCondition(String left, String right, String comp)
+    {
+        String stmt[] = modifyExprInput(right);
+
+        String newExpression = "";
+        String exprTmp[] = new String[stmt.length];
+        int exprTmpCount = 0;
+        int indexStart = 0;
+        int indexEnd = 0;
+        boolean subExpr = false;
+        for (int i = 0; i < stmt.length; i++)
+        {
+            // We have to in the first place compute expression between brackets
+            if (stmt[i].equals("(") || stmt[i].equals(")"))
+            {
+                String tmp = "";
+                // We have to identify beginning of the expression
+                // between brackets
+                if (stmt[i].equals("("))
+                {
+                    indexStart = i + 1;
+                    subExpr = true;
+                }
+                if (stmt[i].equals(")"))
+                {
+                    indexEnd = i;
+                    subExpr = false;
+
+                    // Build new sub-expression
+                    // ---------------------------------------------- //
+                    int arrSize = indexEnd - indexStart;
+                    int countTmp = 0;
+                    String subExprTMP[] = new String[arrSize];
+                    for (int j = indexStart; j < indexEnd; j++)
+                    {
+                        subExprTMP[countTmp] = stmt[j];
+                        countTmp++;
+                    }
+                    // ---------------------------------------------- //
+
+                    // Computing sub-expression
+                    // ------------------------------------------------------------------------- //
+                    // Working on [*] and [/]
+                    // will return modified array of strings
+                    subExprTMP = multiplyDivide(subExprTMP);
+
+                    // Working on [+] and [-]
+                    // will return void because eliminating [+] and [-] should be final stage
+                    subExprTMP = addSubtract(subExprTMP);
+                    // ------------------------------------------------------------------------- //
+
+                    // Replace closing bracket of the current sub-expressions with
+                    // register which will store sub-expression computation result
+                    stmt[i] = subExprTMP[0];
+                    i--;
+                }
+            }
+            else
+            {
+                if (!subExpr)
+                {
+                    exprTmp[exprTmpCount] = stmt[i];
+                    exprTmpCount++;
+                }
+            }
+        }
+
+        // Re-build exprTmp array, and remove all empty and null records
+        exprTmp = cleaningUpArray(exprTmp);
+
+        // Final stage, the exprTmp should not contain any brackets
+        // Working on [*] and [/]
+        // will return modified array of strings
+        exprTmp = multiplyDivide(exprTmp);
+
+        // Working on [+] and [-]
+        // will return void because eliminating [+] and [-] should be final stage
+        exprTmp = addSubtract(exprTmp);
+
+        // Store the least generated register in the right side of expression
+        // basically store in in the final variable
+
+        assignmentBody = finalCondition(left, exprTmp, comp);
+
+    }
+
+    /**
+     * This function is used to identifying comparison symbol
+     * @return
+     */
+    private String identifyComparisonSymbol()
+    {
+        String stmt[] = statement.split("");
+        String compTmp = null;
+        String comp = null;
+        int index = -1;
+        boolean found = false;
+
+        for (int i = 0; i < stmt.length; i++)
+        {
+            for (Map.Entry<String, String> entry : conditionsMap.entrySet())
+            {
+                String str = Character.toString(entry.getKey().charAt(0));
+                if (stmt[i].equals(str))
+                {
+                    comp = stmt[i];
+                    index = i;
+                    found = true;
+                    break;
+                }
+                else
+                {
+                    comp = null;
+                    found = false;
+                }
+            }
+
+            if (found)
+            {
+                break;
+            }
+        }
+        found = false;
+
+        for (Map.Entry<String, String> entry : conditionsMap.entrySet())
+        {
+            String tmp = (comp + stmt[index + 1]);
+            if (tmp.equals(entry.getKey()))
+            {
+                compTmp = entry.getKey();
+                found = true;
+                break;
+            }
+            else
+            {
+                compTmp = null;
+                found = false;
+            }
+        }
+
+        if (found)
+        {
+            comp = compTmp;
+        }
+
+        return comp;
     }
 
     /**
@@ -337,7 +471,7 @@ public class GenerateStatement
      */
     public void buildAssignmentExpression()
     {
-        // Remove ';' from the statement
+        // Remove ';' from the end of the statement
         // ----------------------------------------------------------------------- //
         String statementTMP = null;
         if ( statement.charAt(statement.length() - 1) == ';' )
@@ -377,10 +511,10 @@ public class GenerateStatement
         }
         else if (isLiteral(left))
         {
-            lType = findType(left);
+            lType = findTypeByID(left);
 
             // Get pre-generated register
-            regLeft = findReg(left);
+            regLeft = findID(left);
         }
         // ------------------------------------------------------------------------------------------- //
 
@@ -436,110 +570,6 @@ public class GenerateStatement
         assignmentBody = assignmentBody + "move " + regRight + " " + left;
     }
 
-    private String[] modifyExprInput(String left, String right)
-    {
-        // Adding new-line, later it will help us to rebuild digits in this input-line
-        right = right + "\n";
-
-        // Splitting up string-line into individual characters
-        String stmt[] = right.split("");
-
-        // This string will store digit
-        String tmpDigit = "";
-        int startIndex = 0;
-        int endIndex = 0;
-        int range = 0;
-        String symbols[] = {"+", "-", "*", "/", "(", ")"};
-
-        // When converting into string array,
-        // extra check must be developed to capture entire number
-        // currently program missing full length of digit
-        for (int i = 0; i < stmt.length; i++)
-        {
-            if (stmt[i].matches("[0-9]"))
-            {
-                // Storing beginning of a digit
-                startIndex = i;
-                boolean stop = false;
-
-                // Looking for the end of a digit
-                for (int j = i; j < stmt.length; j++)
-                {
-                    // Loop via all symbols to find match
-                    for (int k = 0; k < symbols.length; k++)
-                    {
-                        if (stmt[j].equals(symbols[k]) || stmt[j].equals("\n"))
-                        {
-                            endIndex = j - 1;
-                            stop = true;
-                            break;
-                        }
-                    }
-
-                    if (stop)
-                    {
-                        break;
-                    }
-                }
-
-                for (i = startIndex; i <= endIndex; i++)
-                {
-                    tmpDigit = tmpDigit + stmt[i];
-                    stmt[i] = "";
-                }
-                stmt[endIndex] = tmpDigit;
-            }
-
-            tmpDigit = "";
-            startIndex = 0;
-            endIndex = 0;
-        }
-
-        stmt = cleaningUpArray(stmt);
-
-
-        // Some IDs can be larger that single character,
-        // so we have to properly identify such Ids
-        for (int i = 0; i < stmt.length; i++)
-        {
-            String newID = "";
-            while ( i < stmt.length )
-            {
-                if (
-                        stmt[i].equals("+") || stmt[i].equals("-") ||
-                        stmt[i].equals("*") || stmt[i].equals("/") ||
-                        stmt[i].equals("(") || stmt[i].equals(")")
-                    )
-                {
-                    break;
-                }
-                else
-                {
-                    if (newID.equals(""))
-                    {
-                        newID = stmt[i];
-                        stmt[i] = "";
-                    }
-                    else
-                    {
-                        newID = newID + stmt[i];
-                        stmt[i] = "";
-                    }
-                }
-                i++;
-            }
-
-            if (!newID.equals(""))
-            {
-                stmt[i-1] = newID;
-            }
-        }
-
-
-        stmt = cleaningUpArray(stmt);
-
-        return stmt;
-    }
 
     /**
      * This function is used to generate complex assignment expressions,
@@ -549,7 +579,7 @@ public class GenerateStatement
      */
     public void buildComplexAssignment(String lType, String left, String right)
     {
-        String stmt[] = modifyExprInput(left, right);
+        String stmt[] = modifyExprInput(right);
 
         String newExpression = "";
         String exprTmp[] = new String[stmt.length];
@@ -697,7 +727,7 @@ public class GenerateStatement
                 // Generating Tiny code for this pair of variables
                 // ------------------------------------------------------------------------ //;
 
-                String microExpr = null;
+                String tinyCode = null;
 
                 int regNum1 = registerCount;
                 String reg1 = "r" + registerCount;
@@ -710,11 +740,11 @@ public class GenerateStatement
                 //muli opmrl reg: computes reg = reg * op1
                 //divi opmrl reg: computes reg = reg / op1
 
-                microExpr = "move " + id1 + " " + reg1 + "\n";
-                microExpr = microExpr + "move " + id2 + " " + reg2 + "\n";
-                microExpr = microExpr + command + " " + reg1 + " " + reg2 + "\n";
+                tinyCode = "move " + id1 + " " + reg1 + "\n";
+                tinyCode = tinyCode + "move " + id2 + " " + reg2 + "\n";
+                tinyCode = tinyCode + command + " " + reg1 + " " + reg2 + "\n";
 
-                microExpression = new MicroExpression(id1, id2, reg1, microExpr, arithmeticSymbol, type, regNum1);
+                microExpression = new MicroExpression(id1, id2, reg1, tinyCode, arithmeticSymbol, type, regNum1);
                 microExpressionMap.put(reg1, microExpression);
 
                 stackOFMicroExpr.push(microExpression);
@@ -799,7 +829,7 @@ public class GenerateStatement
                 // Generating Tiny code for this pair of variables
                 // ------------------------------------------------------------------------ //
 
-                String microExpr = null;
+                String tinyCode = null;
 
                 int regNum1 = registerCount;
                 String reg1 = "r" + registerCount;
@@ -812,11 +842,11 @@ public class GenerateStatement
                 //muli opmrl reg: computes reg = reg * op1
                 //divi opmrl reg: computes reg = reg / op1
 
-                microExpr = "move " + id1 + " " + reg1 + "\n";
-                microExpr = microExpr + "move " + id2 + " " + reg2 + "\n";
-                microExpr = microExpr + command + " " + reg1 + " " + reg2 + "\n";
+                tinyCode = "move " + id1 + " " + reg1 + "\n";
+                tinyCode = tinyCode + "move " + id2 + " " + reg2 + "\n";
+                tinyCode = tinyCode + command + " " + reg1 + " " + reg2 + "\n";
 
-                microExpression = new MicroExpression(id1, id2, reg1, microExpr, arithmeticSymbol, type, regNum1);
+                microExpression = new MicroExpression(id1, id2, reg1, tinyCode, arithmeticSymbol, type, regNum1);
                 microExpressionMap.put(reg1, microExpression);
 
                 stackOFMicroExpr.push(microExpression);
@@ -835,6 +865,111 @@ public class GenerateStatement
         // and returning it
         return cleaningUpArray(stmt);
 
+    }
+
+    private String[] modifyExprInput(String right)
+    {
+        // Adding new-line, later it will help us to rebuild digits in this input-line
+        right = right + "\n";
+
+        // Splitting up string-line into individual characters
+        String stmt[] = right.split("");
+
+        // This string will store digit
+        String tmpDigit = "";
+        int startIndex = 0;
+        int endIndex = 0;
+        int range = 0;
+        String symbols[] = {"+", "-", "*", "/", "(", ")"};
+
+        // When converting into string array,
+        // extra check must be developed to capture entire number
+        // currently program missing full length of digit
+        for (int i = 0; i < stmt.length; i++)
+        {
+            if (stmt[i].matches("[0-9]"))
+            {
+                // Storing beginning of a digit
+                startIndex = i;
+                boolean stop = false;
+
+                // Looking for the end of a digit
+                for (int j = i; j < stmt.length; j++)
+                {
+                    // Loop via all symbols to find match
+                    for (int k = 0; k < symbols.length; k++)
+                    {
+                        if (stmt[j].equals(symbols[k]) || stmt[j].equals("\n"))
+                        {
+                            endIndex = j - 1;
+                            stop = true;
+                            break;
+                        }
+                    }
+
+                    if (stop)
+                    {
+                        break;
+                    }
+                }
+
+                for (i = startIndex; i <= endIndex; i++)
+                {
+                    tmpDigit = tmpDigit + stmt[i];
+                    stmt[i] = "";
+                }
+                stmt[endIndex] = tmpDigit;
+            }
+
+            tmpDigit = "";
+            startIndex = 0;
+            endIndex = 0;
+        }
+
+        stmt = cleaningUpArray(stmt);
+
+
+        // Some IDs can be larger that single character,
+        // so we have to properly identify such Ids
+        for (int i = 0; i < stmt.length; i++)
+        {
+            String newID = "";
+            while ( i < stmt.length )
+            {
+                if (
+                        stmt[i].equals("+") || stmt[i].equals("-") ||
+                                stmt[i].equals("*") || stmt[i].equals("/") ||
+                                stmt[i].equals("(") || stmt[i].equals(")")
+                )
+                {
+                    break;
+                }
+                else
+                {
+                    if (newID.equals(""))
+                    {
+                        newID = stmt[i];
+                        stmt[i] = "";
+                    }
+                    else
+                    {
+                        newID = newID + stmt[i];
+                        stmt[i] = "";
+                    }
+                }
+                i++;
+            }
+
+            if (!newID.equals(""))
+            {
+                stmt[i-1] = newID;
+            }
+        }
+
+
+        stmt = cleaningUpArray(stmt);
+
+        return stmt;
     }
 
     private String[] cleaningUpArray(String stmt[])
@@ -871,6 +1006,53 @@ public class GenerateStatement
         return output;
     }
 
+    private String finalCondition(String left, String stmt[], String comp)
+    {
+        String tmp1 = "";
+        String tmp2 = "";
+
+        String regLeft = null;
+        String lType = null;
+
+        String regRight = null;
+        String rType = null;
+
+        regLeft = findID(left);
+        lType = findTypeByReg(regLeft);
+
+        regRight = stmt[0];
+
+        // Getting Tiny code from stack, and type for the left side of expression
+        for (MicroExpression me : stackOFMicroExpr)
+        {
+            // We have to get type of newly generated register from stack
+            rType = me.getType();
+            tmp2 = tmp2 + me.getTinyCode();
+        }
+
+        // Getting compare label name in the form of Tiny code
+        if (lType.equals("INT") && rType.equals("INT"))
+        {
+            compStmt = "cmpi";
+        }
+        else if (lType.equals("FLOAT") && rType.equals("FLOAT"))
+        {
+            compStmt = "cmpr";
+        }
+
+        // Final output for a specific condition expression
+        tmp1 = compStmt + " " + left + " " + stmt[0];
+        tmp2 = tmp2 + tmp1;
+
+        return tmp2;
+    }
+
+    /**
+     * This function generates final output for the assignment expression
+     * @param left
+     * @param stmt
+     * @return
+     */
     private String finalAssignment(String left, String stmt[])
     {
         String tmp1 = "";
@@ -889,6 +1071,11 @@ public class GenerateStatement
         return tmp2;
     }
 
+    /**
+     * Getting type of an ID
+     * @param id
+     * @return
+     */
     private String typeTest(String id)
     {
         String type = null;
@@ -903,7 +1090,7 @@ public class GenerateStatement
         }
         else if (isLiteral(id))
         {
-            type = findType(id);
+            type = findTypeByID(id);
 
             // id can be in the form of register, so we have to use
             // another way to find out data-type of register
@@ -980,7 +1167,7 @@ public class GenerateStatement
      * @param tmp
      * @return
      */
-    private String findType(String tmp)
+    private String findTypeByID(String tmp)
     {
         String type = null;
 
@@ -998,7 +1185,51 @@ public class GenerateStatement
     }
 
     /**
-     * After we generate local statements we also generated register,
+     * This method is used to identify the type of a variable
+     * @param tmp
+     * @return
+     */
+    private String findTypeByReg(String tmp)
+    {
+        String type = null;
+
+        // Loop via varMap to identify type of each var
+        for (Map.Entry<String, VarDeclaration> entry : varMap.entrySet())
+        {
+            if (tmp.equals(entry.getValue().getRegister()))
+            {
+                type = entry.getValue().getType();
+                break;
+            }
+        }
+
+        return type;
+    }
+
+    /**
+     * Is used to test existing IDs
+     * @param var
+     * @return
+     */
+    private String findID(String var)
+    {
+        String id = null;
+
+        // Loop via varMap to identify type of each var
+        for (Map.Entry<String, VarDeclaration> entry : varMap.entrySet())
+        {
+            if (var.equals(entry.getKey()))
+            {
+                id = entry.getValue().getRegister();
+                break;
+            }
+        }
+
+        return id;
+    }
+
+    /**
+     * After we generate local statements we also generated registers,
      * so we have to find these registers and maximum register number
      * @param var
      * @return
@@ -1010,7 +1241,7 @@ public class GenerateStatement
         // Loop via varMap to identify type of each var
         for (Map.Entry<String, VarDeclaration> entry : varMap.entrySet())
         {
-            if (var.equals(entry.getKey()))
+            if (var.equals(entry.getValue().getRegister()))
             {
                 reg = entry.getValue().getRegister();
                 break;
@@ -1019,7 +1250,6 @@ public class GenerateStatement
 
         return reg;
     }
-
 
 
     /** Get prefix for a label that is based on comparison expression
