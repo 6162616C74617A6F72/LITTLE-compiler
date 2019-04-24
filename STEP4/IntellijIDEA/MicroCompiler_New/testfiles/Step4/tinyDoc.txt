@@ -39,13 +39,13 @@ str sid    "a string constant"  ; the only operation on string constants is sys 
 
 label target           ; a jump target
 move opmrl opmr        ; only one operand can be a memory id or stack variable
-addi opmrl reg         ; integer addition, reg = reg + op1
+addi opmrl reg         ; integer addition, reg = op1 + reg
 addr opmrl reg         ; real (i.e. floatingpoint) addition
-subi opmrl reg         ; computes reg = reg - op1
+subi opmrl reg         ; computes reg = op1 - reg
 subr opmrl reg
-muli opmrl reg         ; computes reg = reg * op1
+muli opmrl reg         ; computes reg = op1 * reg
 mulr opmrl reg
-divi opmrl reg         ; computes reg = reg /  op1
+divi opmrl reg         ; computes reg = op1 / reg
 divr opmrl reg
 inci reg               ; increment the (integer) register value by 1
 deci reg               ; decrement the (integer) register value by 1

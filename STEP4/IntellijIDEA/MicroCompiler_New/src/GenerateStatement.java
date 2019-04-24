@@ -579,6 +579,8 @@ public class GenerateStatement
      */
     public void buildComplexAssignment(String lType, String left, String right)
     {
+        //System.out.printf("Complex Assignment: [ %s := %s ] \n", left, right);
+
         String stmt[] = modifyExprInput(right);
 
         String newExpression = "";
@@ -737,12 +739,13 @@ public class GenerateStatement
                 String reg2 = "r" + registerCount;
                 registerCount++;
 
-                //muli opmrl reg: computes reg = reg * op1
-                //divi opmrl reg: computes reg = reg / op1
+                //muli opmrl reg: computes reg = op1 * reg
+                //divi opmrl reg: computes reg = op1 / reg
 
                 tinyCode = "move " + id1 + " " + reg1 + "\n";
                 tinyCode = tinyCode + "move " + id2 + " " + reg2 + "\n";
-                tinyCode = tinyCode + command + " " + reg1 + " " + reg2 + "\n";
+                //tinyCode = tinyCode + command + " " + reg1 + " " + reg2 + "\n";
+                tinyCode = tinyCode + command + " " + reg2 + " " + reg1 + "\n";
 
                 microExpression = new MicroExpression(id1, id2, reg1, tinyCode, arithmeticSymbol, type, regNum1);
                 microExpressionMap.put(reg1, microExpression);
@@ -844,7 +847,8 @@ public class GenerateStatement
 
                 tinyCode = "move " + id1 + " " + reg1 + "\n";
                 tinyCode = tinyCode + "move " + id2 + " " + reg2 + "\n";
-                tinyCode = tinyCode + command + " " + reg1 + " " + reg2 + "\n";
+                //tinyCode = tinyCode + command + " " + reg1 + " " + reg2 + "\n";
+                tinyCode = tinyCode + command + " " + reg2 + " " + reg1 + "\n";
 
                 microExpression = new MicroExpression(id1, id2, reg1, tinyCode, arithmeticSymbol, type, regNum1);
                 microExpressionMap.put(reg1, microExpression);
@@ -1059,6 +1063,8 @@ public class GenerateStatement
         String tmp2 = "";
 
         tmp1 = "move " + stmt[0] + " " + left;
+
+        //System.out.printf("FINAL A: %s\n", tmp1);
 
         //assignmentBody
         //Test print stack
