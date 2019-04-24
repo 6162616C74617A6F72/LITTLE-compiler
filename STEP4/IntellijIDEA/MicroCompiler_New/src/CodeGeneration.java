@@ -1,11 +1,10 @@
 /**
  * Montana State University
  * Class: Compilers - CSCI 468
- * @author Olexandr Matveyev, Mandy Hawkins, Abdulrahman Alhitm, Michael Seeley
+ * @author Olexandr Matveyev
  */
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
 
@@ -14,6 +13,9 @@ import java.util.Stack;
  */
 public class CodeGeneration
 {
+    // Assign operation
+    private final String ASSIGN = ":=";
+
     // Symbol table
     private Map<Integer, MicroSymbolTable> mst = null;
 
@@ -32,6 +34,11 @@ public class CodeGeneration
     // Stack of labels for ELSE BLOCK, you can treat it as IF-ELSE BLOCK
     private Stack<String> labelsIfElse = new Stack<String>();
 
+    // Final output will be stored in a stack
+    private Stack<String> finalOutput = new Stack<String>();
+
+    private GenerateStatement gs = new GenerateStatement();
+
     // Is used to count inner IF BLOCKS
     private int numOf_inner_IFs = 0;
 
@@ -49,7 +56,7 @@ public class CodeGeneration
      * also is used to partially generate tiny code.
      * Currently in the demo stage.
      */
-    public void demo()
+    public void start()
     {
         // Check if symbol table get duplicate identifiers
         // if there are duplicate identifiers, then print and error message
@@ -97,8 +104,8 @@ public class CodeGeneration
                 // =================================================================================== //
                 if (label != null)
                 {
-                    generateLabel(null, label, false, null);
-                    System.out.printf("\n");
+                    generateLabel(null, label, false, null, entry.getValue().isFunction());
+                    //System.out.printf("\n");
 
                     // Print label stack of WHILE labels
                     // Visit this if statement just ones to print end of WHILE
@@ -108,10 +115,14 @@ public class CodeGeneration
                         {
                             for (String s : labelsWhile)
                             {
-                                System.out.printf("%s\n", s.toLowerCase());
+
+                                // Store in the stack
+                                finalOutput.push( (s.toLowerCase()) );
+
+                                //System.out.printf("%s\n", s.toLowerCase());
                             }
                             labelsWhile = null;
-                            System.out.printf("\n");
+                            //System.out.printf("\n");
                         }
                     }
 
@@ -125,17 +136,20 @@ public class CodeGeneration
                 if(entry.getValue().getStatementObj() != null)
                 {
                     generateLocalDeclarations(entry.getValue().getStatementObj(), symbolTableID, symbolTableName, label);
-                    System.out.printf("\n");
+                    //System.out.printf("\n");
                 }
 
                 // ---------------------------------------------------------------------------------- //
                 // =================================================================================== //
 
-                System.out.printf("\n");
+                //System.out.printf("\n");
             }
         }
 
-        System.out.printf("sys halt\n");
+        // Store in the stack
+        finalOutput.push("sys halt");
+
+        //System.out.printf("sys halt\n");
     }
 
     /**
@@ -157,7 +171,11 @@ public class CodeGeneration
         {
             str = "var " + id;
         }
-        System.out.printf("%s", str);
+
+        // Store in the stack
+        finalOutput.push(str);
+
+        //System.out.printf("%s", str);
     }
 
     /**
@@ -218,7 +236,7 @@ public class CodeGeneration
      * @param isCondition
      * @param statement
      */
-    private void generateLabel(String symbolTableName, String lable, boolean isCondition, String statement)
+    private void generateLabel(String symbolTableName, String lable, boolean isCondition, String statement, boolean isFunction)
     {
         // Print labels or block names
         // ---------------------------------------------------------------------------- //
@@ -226,8 +244,20 @@ public class CodeGeneration
         {
             if (!lable.equals("EXIT-IF") && !lable.equals("EXIT-ELSE"))
             {
-                String str = "label " + lable;
-                System.out.printf("%s", str);
+                if (isFunction)
+                {
+                    String str = "label " + lable;
+
+                    // Store in the stack
+                    finalOutput.push( str );
+
+                    //System.out.printf("%s", str);
+                }
+                else
+                {
+                    String str = "label " + lable;
+                    //System.out.printf("%s", str);
+                }
             }
         }
         // ---------------------------------------------------------------------------- //
@@ -278,8 +308,23 @@ public class CodeGeneration
             }
             // ----------------------------------------------------------- //
 
-            String output = condStnt + "\n" + "jump-into: " + lblElse + "\nif-body";
-            System.out.printf("%s\n", output);
+            // -------------------------------------------------------------------------------- //
+            // Here we should call "gs.buildCondition()" function to generate condition
+            // and after we have to generate labels based on current IF, ELSE or WHILE BLOCK,
+            // and based on current Condition
+
+            gs.updateData(condStnt, varMap);
+            gs.buildCondition();
+            condStnt = gs.getCondBody();
+            // -------------------------------------------------------------------------------- //
+
+            //String output = condStnt + "\n" + gs.getJumpName() + " " + lblElse + "\nif-body";
+            String output = condStnt + "\n" + gs.getJumpName() + " " + lblElse;
+
+            // Store in the stack
+            finalOutput.push(output);
+
+            //System.out.printf("%s\n", output);
 
             // At some point this wearable used to identify multiple IF BLOCKS
             numOf_inner_IFs++;
@@ -290,7 +335,7 @@ public class CodeGeneration
         // ---------------------------------------------------------------------------- //
         if (lable.equals("EXIT-IF") && !isCondition)
         {
-            System.out.printf("%s\n", "EXIT-IF");
+            //System.out.printf("%s\n", "EXIT-IF");
 
             // ----------------------------------------------------------- //
             // If no inner IFs "numOf_inner_IFs" should be less than 2
@@ -348,8 +393,12 @@ public class CodeGeneration
                 }
 
 
-                String output = "label " + lblExit + "\n";
-                System.out.printf("\n%s\n", output);
+                String output = "label " + lblExit;
+
+                // Store in the stack
+                finalOutput.push(output);
+
+                //System.out.printf("%s", output);
             }
             // -------------------------------------------------------------------- //
         }
@@ -407,8 +456,13 @@ public class CodeGeneration
                 labelsIf.push(lblExit);
                 // ------------------------------------------------------- //
 
-                String output = "jump-out " + lblExit + "\nlabel " + lblElse + "\n" + "else-body" + "\n";
-                System.out.printf("\n%s\n", output);
+                //String output = "jmp " + lblExit + "\nlabel " + lblElse + "\n" + "else-body" + "\n";
+                String output = "jmp " + lblExit + "\n" + "label " + lblElse;
+
+                // Store in the stack
+                finalOutput.push(output);
+
+                //System.out.printf("%s", output);
             }
         }
         // ---------------------------------------------------------------------------- //
@@ -425,19 +479,36 @@ public class CodeGeneration
         // ---------------------------------------------------------------------------- //
         if (lable.equals("WHILE") && isCondition)
         {
+            String condStnt = statement;
+
             String lblLoop = "label" + labelCount;
             labelCount++;
 
             String lblExit = "label" + labelCount;
             labelCount++;
 
+
             // Push to the stack "continue" and "exit" labels
             String lblContinue = "jmp " + lblLoop;
             labelsWhile.push(lblContinue);
             labelsWhile.push( ("label " + lblExit) );
 
-            String output = "label " + lblLoop + "\n" + statement + "\n" + "jump: " + lblExit;
-            System.out.printf("%s\n", output);
+            // -------------------------------------------------------------------------------- //
+            // Here we should call "generateCondition" function to generate condition
+            // and after we have to generate labels based on current IF, ELSE or WHILE BLOCK,
+            // and based on current Condition
+
+            gs.updateData(condStnt, varMap);
+            gs.buildCondition();
+            condStnt = gs.getCondBody();
+            // -------------------------------------------------------------------------------- //
+
+            String output = "label " + lblLoop + "\n" + condStnt + "\n" + gs.getJumpName() + " " + lblExit;
+
+            // Store in the stack
+            finalOutput.push(output);
+
+            //System.out.printf("%s\n", output);
         }
         // ---------------------------------------------------------------------------- //
     }
@@ -454,41 +525,41 @@ public class CodeGeneration
     {
         if (isCondition)
         {
+            // Moved to generate labels
             // -------------------------------------------------------------------------------- //
             // Here we should call "generateCondition" function to generate condition
             // and after we have to generate labels based on current IF, ELSE or WHILE BLOCK,
             // and based on current Condition
             // -------------------------------------------------------------------------------- //
 
-            generateLabel(null, label, isCondition, statement);
+            generateLabel(null, label, isCondition, statement, false);
         }
         else
         {
             // -------------------------------------------------------------------------------- //
-            // Here we should call "generateExpression" function to generate assignment statement
+            // Here we should call "gs.buildAssignmentExpression()" function
+            // to generate assignment statement
             // and after just print it out
+
+            String assignmentBody = null;
+            gs.updateData(statement, varMap);
+            gs.buildAssignmentExpression();
+            if (gs.getAssignmentBody() == null)
+            {
+                assignmentBody = statement;
+            }
+            else
+            {
+                assignmentBody = gs.getAssignmentBody();
+                gs.resetData();
+            }
             // -------------------------------------------------------------------------------- //
 
-            String str = statementType + " ::: " + statement;
-            System.out.printf("%s", str);
+            // Store in the stack
+            finalOutput.push(assignmentBody);
+
+            //System.out.printf("%s", assignmentBody);
         }
-
-        // Currently used for testing purpose
-        // If end of function
-        if (label.equals("MAIN-WRITE") && !isBeginningOfBlock)
-        {
-            System.out.printf("END OF FUNCTION\n");
-        }
-    }
-
-    public void generateCondition(String condition)
-    {
-        // This method must be used to identify all part of the condition statement
-    }
-
-    public void generateExpression(String assignment)
-    {
-        // This method must be used to identify all part of the assignment statement
     }
 
     /**
@@ -520,7 +591,7 @@ public class CodeGeneration
         }
         catch (Exception e)
         {
-            System.out.printf("BUILD-SYS" + e.getMessage());
+            //System.out.printf("BUILD-SYS" + e.getMessage());
         }
         // ------------------------------------------------------------ //
 
@@ -547,7 +618,11 @@ public class CodeGeneration
                         if (sys != null)
                         {
                             String output = sys + " " + ids[i];
-                            System.out.printf("%s\n", output);
+
+                            // Store in the stack
+                            finalOutput.push(output);
+
+                            //System.out.printf("%s\n", output);
                         }
                     }
                 }
@@ -580,29 +655,17 @@ public class CodeGeneration
                         if (sys != null)
                         {
                             String output = sys + " " + ids[i];
-                            System.out.printf("%s\n", output);
+
+                            // Store in the stack
+                            finalOutput.push(output);
+
+                            //System.out.printf("%s\n", output);
                         }
                     }
                 }
             }
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * Check for duplicate identifiers
@@ -650,5 +713,14 @@ public class CodeGeneration
         }
 
         return duplicates;
+    }
+
+
+    public void output()
+    {
+        for (String s : finalOutput)
+        {
+            System.out.printf("%s\n", s);
+        }
     }
 }

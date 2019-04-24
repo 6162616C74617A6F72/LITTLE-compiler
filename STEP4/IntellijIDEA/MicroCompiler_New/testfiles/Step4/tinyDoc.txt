@@ -68,9 +68,9 @@ unlnk                  ; copy fp into sp, pop fp from stack
 
 cmpr opmrl reg         ; real comparison
 jmp target             ; unconditional jump
-jgt target             ; jump if (op1 of the preceeding cmp was) greater (than op2)
+jgt target             ; jump if (op1 of the preceding cmp was) greater (than op2)
 jlt target             ; jump if less than
-jge target             ; jump if greater of equal
+jge target             ; jump if greater or equal
 jle target             ; jump if less or equal
 jeq target             ; jump if equal
 jne target             ; jump if not equal

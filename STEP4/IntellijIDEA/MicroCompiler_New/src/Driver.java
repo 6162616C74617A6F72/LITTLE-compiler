@@ -1,7 +1,7 @@
 /**
  * Montana State University
  * Class: Compilers - CSCI 468
- * @author Olexandr Matveyev, Mandy Hawkins, Abdulrahman Alhitm, Michael Seeley
+ * @author Olexandr Matveyev
  */
 
 import java.io.*;
@@ -36,11 +36,6 @@ public class Driver
 
             try
             {
-                // USED FOR TESTING
-                //----------------------------------------------------------------------------//
-                System.out.printf("IN [DRIVER CLASS] CURRENT INPUT FILE: %s\n", fileName);
-                //----------------------------------------------------------------------------//
-
                 // Get resource from the file path
                 res = Paths.get(filePath).toUri().toURL();
 
@@ -62,20 +57,11 @@ public class Driver
 
 
                 // Building symbol table
-                // IT IS STEP 3
+                // IT IS STEP 3, IS ALSO FOR PART 4
                 //===========================================================================================//
                 DriverSymbolTable driverSymbolTable = new DriverSymbolTable(res);
                 driverSymbolTable.run();
                 //===========================================================================================//
-
-
-                // Building symbol table
-                // IT IS STEP 4
-                //===========================================================================================//
-
-
-                //===========================================================================================//
-
             }
             catch (IOException e)
             {

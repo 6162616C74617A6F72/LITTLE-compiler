@@ -1,7 +1,7 @@
 /**
  * Montana State University
  * Class: Compilers - CSCI 468
- * @author Olexandr Matveyev, Mandy Hawkins, Abdulrahman Alhitm, Michael Seeley
+ * @author Olexandr Matveyev
  */
 
 /**
@@ -30,18 +30,27 @@ public class MicroSymbolTable
     // Data structure to store statement information
     private Statement statementObj = null;
 
+    //Used to identify if current record is function
+    private boolean isFunction = false;
+
     /**
      * Constructor is used only for symbol-table-name
      * @param symbolTableName
      */
-    public MicroSymbolTable(String label, String symbolTableName, int symbolTableId)
+    public MicroSymbolTable(String label, String symbolTableName, int symbolTableId, boolean isFunction)
     {
         this.elementId = id;
         this.symbolTableId = symbolTableId;
         this.label = label;
         this.symbolTableName = symbolTableName;
         this.currentSymbolTableName = symbolTableName;
+        this.isFunction = isFunction;
         id++;
+    }
+
+    public boolean isFunction()
+    {
+        return this.isFunction;
     }
 
     /**

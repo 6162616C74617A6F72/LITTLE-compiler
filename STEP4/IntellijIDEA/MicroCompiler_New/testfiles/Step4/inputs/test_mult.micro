@@ -12,7 +12,7 @@ BEGIN
           READ(c, d);
 
           e := a * c + b * d;
-          
+
           WRITE(c, newline, d, newline, e, newline);
 
 	END	
