@@ -658,10 +658,16 @@ public class GenerateStatement
 
         // Store the least generated register in the right side of expression
         // basically store in in the final variable
+
         assignmentBody = finalAssignment(left, exprTmp);
 
     }
 
+    /**
+     * This function is used to handle MULTIPLICATION and DIVISION operations.
+     * @param stmt
+     * @return
+     */
     private String[] multiplyDivide(String stmt[])
     {
         MicroExpression microExpression = null;
@@ -737,12 +743,13 @@ public class GenerateStatement
                 String reg2 = "r" + registerCount;
                 registerCount++;
 
-                //muli opmrl reg: computes reg = reg * op1
-                //divi opmrl reg: computes reg = reg / op1
+                //muli opmrl reg: computes reg = op1 * reg
+                //divi opmrl reg: computes reg = op1 / reg
 
                 tinyCode = "move " + id1 + " " + reg1 + "\n";
                 tinyCode = tinyCode + "move " + id2 + " " + reg2 + "\n";
-                tinyCode = tinyCode + command + " " + reg1 + " " + reg2 + "\n";
+                //tinyCode = tinyCode + command + " " + reg1 + " " + reg2 + "\n";
+                tinyCode = tinyCode + command + " " + reg2 + " " + reg1 + "\n";
 
                 microExpression = new MicroExpression(id1, id2, reg1, tinyCode, arithmeticSymbol, type, regNum1);
                 microExpressionMap.put(reg1, microExpression);
@@ -764,6 +771,11 @@ public class GenerateStatement
         return cleaningUpArray(stmt);
     }
 
+    /**
+     * This function is used to handle ADD and SUBTRACT arithmetic.
+     * @param stmt
+     * @return
+     */
     private String[] addSubtract(String stmt[])
     {
         MicroExpression microExpression = null;
@@ -844,7 +856,8 @@ public class GenerateStatement
 
                 tinyCode = "move " + id1 + " " + reg1 + "\n";
                 tinyCode = tinyCode + "move " + id2 + " " + reg2 + "\n";
-                tinyCode = tinyCode + command + " " + reg1 + " " + reg2 + "\n";
+                //tinyCode = tinyCode + command + " " + reg1 + " " + reg2 + "\n";
+                tinyCode = tinyCode + command + " " + reg2 + " " + reg1 + "\n";
 
                 microExpression = new MicroExpression(id1, id2, reg1, tinyCode, arithmeticSymbol, type, regNum1);
                 microExpressionMap.put(reg1, microExpression);
@@ -867,9 +880,16 @@ public class GenerateStatement
 
     }
 
+    /**
+     * This function is used to restructure assignment expression.
+     * Because we have to properly identify an entire digit or a literal.
+     * @param right
+     * @return
+     */
     private String[] modifyExprInput(String right)
     {
-        // Adding new-line, later it will help us to rebuild digits in this input-line
+        // Adding new-line.
+        // Later it will help us to rebuild digits in this input-line
         right = right + "\n";
 
         // Splitting up string-line into individual characters
@@ -972,6 +992,11 @@ public class GenerateStatement
         return stmt;
     }
 
+    /**
+     * This function is used to re-build and array, basically we just removing empty string records.
+     * @param stmt
+     * @return
+     */
     private String[] cleaningUpArray(String stmt[])
     {
         // Cleaning up stmt from empty strings
@@ -1006,6 +1031,13 @@ public class GenerateStatement
         return output;
     }
 
+    /**
+     * This function is used to finalize condition generation
+     * @param left
+     * @param stmt
+     * @param comp
+     * @return
+     */
     private String finalCondition(String left, String stmt[], String comp)
     {
         String tmp1 = "";
@@ -1066,7 +1098,23 @@ public class GenerateStatement
         {
             tmp2 = tmp2 + me.getTinyCode();
         }
-        tmp2 = tmp2 + tmp1;
+
+
+        // Here is one bug. Sometimes Micro source code will have such assignment id1 := id2
+        // where id1 is multi-character literal as well as id2.
+        // So to handle it properly a register generated for id2 must be stored in id1,
+        // but currently in multi-character literal id1 will be stored
+        // multi-character literal id2 which is wrong.
+        // If output of the stack is empty then we got such situation described above.
+        if (tmp2.equals(""))
+        {
+            buildSimpleAssignment(left, stmt[0]);
+            tmp2 = this.assignmentBody;
+        }
+        else
+        {
+            tmp2 = tmp2 + tmp1;
+        }
 
         return tmp2;
     }
@@ -1306,6 +1354,9 @@ public class GenerateStatement
         return this.compStmt;
     }
 
+    /**
+     * This function is used to reset [assignmentBody] and [stackOFMicroExpr]
+     */
     public void resetData()
     {
         this.assignmentBody = null;
