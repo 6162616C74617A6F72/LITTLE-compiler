@@ -9,7 +9,10 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.URL;
+import java.security.Key;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,20 +50,8 @@ public class DriverSymbolTable
             parseTreeWalker.walk(microListener, parser.program());
             //new ParseTreeWalker().walk(microListener, parser.program());
 
-            // IS NOT APPLICABLE FOR THE STEP 3 BECAUSE DATA-STRUCTURE WAS MODIFIED FOR STEP 4,
-            // AS WELL AS MicroListener WAS MODIFIED FOR STEP 4.
-            // ----------------------------------------------------------------------------------- //
-            // Print symbol table for STEP 3
-            //prettyPrint(microListener.getSymbolTable());
-            // ----------------------------------------------------------------------------------- //
-
-            // Print symbol table for STEP 4
-            // and generate tiny programming language
-            // ----------------------------------------------------------------------------------- //
-            CodeGeneration codeGeneration = new CodeGeneration(microListener.getSymbolTable());
-            codeGeneration.start();
-            codeGeneration.output();
-            // ----------------------------------------------------------------------------------- //
+            // Print symbol table
+            prettyPrint(microListener.getSymbolTable());
 
         }
         catch (IOException e)
@@ -70,12 +61,12 @@ public class DriverSymbolTable
     }
 
     /**
-     * Print symbol table for STEP 3
+     * Print symbol table
      * @param tmp: Map<Integer, MicroSymbolTable>
      */
     private void prettyPrint(Map<Integer, MicroSymbolTable> tmp)
     {
-        // Check if symbol table get duplicate identifiers
+        // Check is symbol table get duplicate identifiers
         // if there are duplicate identifiers, then print and error message
         Map<String, MicroSymbolTable> duplicates = duplicateCheck(tmp);
         if (duplicates != null)
@@ -121,7 +112,7 @@ public class DriverSymbolTable
                     System.out.printf("%s\n", str);
                 }
 
-                // This IF block is for INT and FLOAT types
+                // This IF block is for INT, FLOAT types
                 if (name != null && type != null && value == null)
                 {
                     String str = "name " + name + " type " + type;

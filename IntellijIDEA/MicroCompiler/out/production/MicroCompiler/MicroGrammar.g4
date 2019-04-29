@@ -1,7 +1,8 @@
 // Define a grammar called Micro
 // Montana State University
 // Class: Compilers - CSCI 468
-// Authors: Olexandr Matveyev, Mandy Hawkins, Abdulrahman Alhitm, Michael Seeley
+// Authors: instrictor
+// Modified by: Olexandr Matveyev
 grammar MicroGrammar;
 
 /* Program */

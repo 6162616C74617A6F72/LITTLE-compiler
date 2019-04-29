@@ -17,16 +17,7 @@ public class MicroListener extends MicroGrammarBaseListener
     private HashMap<Integer, MicroSymbolTable> symbolTable = new HashMap<Integer, MicroSymbolTable>();
 
     // This global variable is used to count number of IFs WHILEs statements in side a function
-    private int blockCount = 0;
-
-    private boolean isBegFUNC = false;
-    private boolean isEndFUNC = false;
-    private boolean isBegWHILE = false;
-    private boolean isEndWHILE = false;
-    private boolean isBegIF = false;
-    private boolean isEndIF = false;
-    private boolean isBegELSE = false;
-    private boolean isEndELSE = false;
+    private int blockCount = 1;
 
     // This global variable is used to count number of elements (number of records)
     // in symbol table
@@ -34,21 +25,6 @@ public class MicroListener extends MicroGrammarBaseListener
 
     // This global variable is used to track current Symbol-Table-Name
     private String currentSymbolTableName = null;
-
-    // Tracing ENTER and EXIT from a Symbol-Table-Block
-    // --------------------------------------------------------------------------------- //
-    // FUNCTION
-    private boolean isInFUNCTION = false;
-
-    // WHILE
-    private boolean isInWHILE = false;
-
-    // IF
-    private boolean isInIF = false;
-
-    // ELSE
-    private boolean isInELSE = false;
-    // --------------------------------------------------------------------------------- //
 
 
     /**
@@ -58,11 +34,9 @@ public class MicroListener extends MicroGrammarBaseListener
      */
     @Override public void enterProgram(MicroGrammarParser.ProgramContext ctx)
     {
-        String globalSTN = "Symbol table GLOBAL";
-        currentSymbolTableName = globalSTN;
-
-        MicroSymbolTable mstTMP = new MicroSymbolTable("GLOBAL", globalSTN, 0, false);
-        symbolTable.put(new Integer(elementCount), mstTMP);
+        String str = "Symbol table GLOBAL";
+        currentSymbolTableName = str;
+        symbolTable.put(new Integer(elementCount), new MicroSymbolTable(str));
 
         //System.out.printf("Symbol table GLOBAL\n");
         elementCount++;
@@ -133,9 +107,7 @@ public class MicroListener extends MicroGrammarBaseListener
             String type = strType;
             String value = strValue;
 
-            MicroSymbolTable mstTMP = new MicroSymbolTable(name, type, value, currentSymbolTableName, 0);
-
-            symbolTable.put(new Integer(elementCount), mstTMP);
+            symbolTable.put(new Integer(elementCount), new MicroSymbolTable(name, type, value, currentSymbolTableName));
 
             //System.out.printf("name %s type %s value %s\n", strIdName, strType, strValue);
             elementCount++;
@@ -174,6 +146,7 @@ public class MicroListener extends MicroGrammarBaseListener
     {
         String type = null;
         String name[] = null;
+        String value = null;
 
         // try-catch for var-name *IS NOT FOR STRING*
         // ========================================================================================== //
@@ -242,9 +215,7 @@ public class MicroListener extends MicroGrammarBaseListener
         {
             for (int i = 0; i < name.length; i++)
             {
-                MicroSymbolTable mstTMP = new MicroSymbolTable(name[i], type, currentSymbolTableName, 0);
-
-                symbolTable.put(new Integer(elementCount), mstTMP);
+                symbolTable.put(new Integer(elementCount), new MicroSymbolTable(name[i], type, currentSymbolTableName));
 
                 //System.out.printf("name %s type %s\n", name[i], type);
                 elementCount++;
@@ -324,8 +295,11 @@ public class MicroListener extends MicroGrammarBaseListener
      */
     @Override public void enterParam_decl(MicroGrammarParser.Param_declContext ctx)
     {
+        //System.out.printf("\t[Enter-Param-decl]\n");
+
         String type = null;
         String name[] = null;
+        String value = null;
 
         // try-catch for var-name *IS NOT FOR STRING*
         // ========================================================================================== //
@@ -394,8 +368,7 @@ public class MicroListener extends MicroGrammarBaseListener
         {
             for (int i = 0; i < name.length; i++)
             {
-                MicroSymbolTable mstTMP = new MicroSymbolTable(name[i], type, currentSymbolTableName, blockCount);
-                symbolTable.put(new Integer(elementCount), mstTMP);
+                symbolTable.put(new Integer(elementCount), new MicroSymbolTable(name[i], type, currentSymbolTableName));
 
                 //System.out.printf("name %s type %s\n", name[i], type);
                 elementCount++;
@@ -425,19 +398,13 @@ public class MicroListener extends MicroGrammarBaseListener
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterFunc_declarations(MicroGrammarParser.Func_declarationsContext ctx)
-    {
-        this.isInFUNCTION = true;
-    }
+    @Override public void enterFunc_declarations(MicroGrammarParser.Func_declarationsContext ctx) { }
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitFunc_declarations(MicroGrammarParser.Func_declarationsContext ctx)
-    {
-        this.isInFUNCTION = false;
-    }
+    @Override public void exitFunc_declarations(MicroGrammarParser.Func_declarationsContext ctx) { }
     /**
      * {@inheritDoc}
      *
@@ -446,19 +413,13 @@ public class MicroListener extends MicroGrammarBaseListener
     @Override public void enterFunc_decl(MicroGrammarParser.Func_declContext ctx)
     {
         // ===================================================================== //
-        blockCount++;
-
         //String func = ctx.FUNCTION().toString();
         //String funcType = ctx.any_type().VOID().toString();
         String funcName = ctx.id().IDENTIFIER().toString();
-        String label = funcName;
 
         String symbolTableName = "Symbol table " + funcName;
         currentSymbolTableName = symbolTableName;
-
-        MicroSymbolTable mstTMP = new MicroSymbolTable(label, symbolTableName, blockCount, true);
-        symbolTable.put(new Integer(elementCount), mstTMP);
-
+        symbolTable.put(new Integer(elementCount), new MicroSymbolTable(symbolTableName));
 
         //System.out.printf("\nSymbol table %s\n", funcName);
         elementCount++;
@@ -475,23 +436,13 @@ public class MicroListener extends MicroGrammarBaseListener
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterFunc_body(MicroGrammarParser.Func_bodyContext ctx)
-    {
-        this.isBegFUNC = true;
-
-        this.isBegWHILE = false;
-        this.isBegIF = false;
-        this.isBegELSE = false;
-    }
+    @Override public void enterFunc_body(MicroGrammarParser.Func_bodyContext ctx) { }
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitFunc_body(MicroGrammarParser.Func_bodyContext ctx)
-    {
-        this.isEndFUNC = true;
-    }
+    @Override public void exitFunc_body(MicroGrammarParser.Func_bodyContext ctx) { }
     /**
      * {@inheritDoc}
      *
@@ -528,138 +479,12 @@ public class MicroListener extends MicroGrammarBaseListener
      * <p>The default implementation does nothing.</p>
      */
     @Override public void exitBase_stmt(MicroGrammarParser.Base_stmtContext ctx) { }
-
-    /**
-     * This method is used to create statement object for current symbol-table.
-     * FOR STEP 4
-     * @param label
-     * @param isCondition
-     * @param statement
-     */
-    private void addExpression(String label, boolean isCondition, String statement, boolean isBeginningOfBlock, boolean isRead, boolean isWrite)
-    {
-        // Building statement object for current symbol-table
-        Statement statementObj = new Statement(currentSymbolTableName, label, isCondition, statement, isBeginningOfBlock);
-        statementObj.setIsRead(isRead);
-        statementObj.setIsWrite(isWrite);
-
-        MicroSymbolTable mstTMP = new MicroSymbolTable(label, currentSymbolTableName, blockCount, false);
-        mstTMP.setStatementObj(statementObj);
-
-        symbolTable.put(new Integer(elementCount), mstTMP);
-
-        elementCount++;
-    }
-
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterAssign_stmt(MicroGrammarParser.Assign_stmtContext ctx)
-    {
-        boolean isRead = false;
-        boolean isWrite = false;
-
-        // FOR STEP 4
-        // ========================================================================================== //
-        try
-        {
-            // symbol-table-block tracking
-            if (isInIF && !isInELSE)
-            {
-                String label = "IF";
-
-                // ---------------------------------- //
-                String expression = ctx.assign_expr().getText();
-                boolean isCondition = false;
-
-                boolean tmp = false;
-                if(isBegIF)
-                {
-                    tmp = true;
-                }
-
-                addExpression(label, isCondition, expression, tmp, isRead, isWrite);
-                // ---------------------------------- //
-            }
-            if (isInELSE && !isInIF)
-            {
-                String label = "ELSE";
-
-                // ---------------------------------- //
-                String expression = ctx.assign_expr().getText();
-                boolean isCondition = false;
-
-                boolean tmp = false;
-                if(isBegELSE)
-                {
-                    tmp = true;
-                }
-
-                addExpression(label, isCondition, expression, tmp, isRead, isWrite);
-                // ---------------------------------- //
-            }
-            if (isInIF && isInELSE)
-            {
-                String label = "ELSE";
-
-                // ---------------------------------- //
-                String expression = ctx.getText();
-                boolean isCondition = false;
-
-                boolean tmp = false;
-                if(isBegELSE)
-                {
-                    tmp = true;
-                }
-
-                addExpression(label, isCondition, expression, tmp, isRead, isWrite);
-                // ---------------------------------- //
-            }
-            if (isInWHILE && !isInIF && !isInELSE)
-            {
-                String label = "WHILE";
-
-                // ---------------------------------- //
-                String expression = ctx.assign_expr().getText();
-                boolean isCondition = false;
-
-                boolean tmp = false;
-                if(isBegWHILE)
-                {
-                    tmp = true;
-                }
-
-                addExpression(label, isCondition, expression, tmp, isRead, isWrite);
-                // ---------------------------------- //
-            }
-            if (isInFUNCTION && !isInWHILE && !isInIF && !isInELSE)
-            {
-                String label = "MAIN";
-
-                // ---------------------------------- //
-                String expression = ctx.assign_expr().getText();
-                boolean isCondition = false;
-
-                boolean tmp = false;
-                if(isBegFUNC)
-                {
-                    tmp = true;
-                }
-
-                addExpression(label, isCondition, expression, tmp, isRead, isWrite);
-                // ---------------------------------- //
-            }
-        }
-        catch (Exception e)
-        {
-            // Uncomment if you have to debug it
-            //System.out.printf("var-name is: %s\n", e.getMessage());
-        }
-        // ========================================================================================== //
-    }
-
+    @Override public void enterAssign_stmt(MicroGrammarParser.Assign_stmtContext ctx) { }
     /**
      * {@inheritDoc}
      *
@@ -683,109 +508,7 @@ public class MicroListener extends MicroGrammarBaseListener
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterRead_stmt(MicroGrammarParser.Read_stmtContext ctx)
-    {
-        boolean isRead = true;
-        boolean isWrite = false;
-
-        // FOR STEP 4
-        // ========================================================================================== //
-        try
-        {
-            // Testing symbol-table-block tracking
-            if (isInIF && !isInELSE)
-            {
-                String label = "IF-READ";
-
-                // ---------------------------------- //
-                String expression = ctx.id_list().getText();
-                boolean isCondition = false;
-
-                boolean tmp = false;
-                if(isBegIF)
-                {
-                    tmp = true;
-                }
-
-                addExpression(label, isCondition, expression, tmp, isRead, isWrite);
-                // ---------------------------------- //
-            }
-            if (isInELSE && !isInIF)
-            {
-                String label = "ELSE-READ";
-
-                // ---------------------------------- //
-                String expression = ctx.id_list().getText();
-                boolean isCondition = false;
-
-                boolean tmp = false;
-                if(isBegELSE)
-                {
-                    tmp = true;
-                }
-
-                addExpression(label, isCondition, expression, tmp, isRead, isWrite);
-                // ---------------------------------- //
-            }
-            if (isInIF && isInELSE)
-            {
-                String label = "ELSE-READ";
-
-                // ---------------------------------- //
-                String expression = ctx.id_list().getText();
-                boolean isCondition = false;
-
-                boolean tmp = false;
-                if(isBegELSE)
-                {
-                    tmp = true;
-                }
-
-                addExpression(label, isCondition, expression, tmp, isRead, isWrite);
-                // ---------------------------------- //
-            }
-            if (isInWHILE && !isInIF && !isInELSE)
-            {
-                String label = "WHILE-READ";
-
-                // ---------------------------------- //
-                String expression = ctx.id_list().getText();
-                boolean isCondition = false;
-
-                boolean tmp = false;
-                if(isBegWHILE)
-                {
-                    tmp = true;
-                }
-
-                addExpression(label, isCondition, expression, tmp, isRead, isWrite);
-                // ---------------------------------- //
-            }
-            if (isInFUNCTION && !isInWHILE && !isInIF && !isInELSE)
-            {
-                String label = "MAIN-READ";
-
-                // ---------------------------------- //
-                String expression = ctx.id_list().getText();
-                boolean isCondition = false;
-
-                boolean tmp = false;
-                if(isBegFUNC)
-                {
-                    tmp = true;
-                }
-
-                addExpression(label, isCondition, expression, tmp, isRead, isWrite);
-                // ---------------------------------- //
-            }
-        }
-        catch (Exception e)
-        {
-            // Uncomment if you have to debug it
-            //System.out.printf("var-name is: %s\n", e.getMessage());
-        }
-        // ========================================================================================== //
-    }
+    @Override public void enterRead_stmt(MicroGrammarParser.Read_stmtContext ctx) { }
     /**
      * {@inheritDoc}
      *
@@ -797,110 +520,7 @@ public class MicroListener extends MicroGrammarBaseListener
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterWrite_stmt(MicroGrammarParser.Write_stmtContext ctx)
-    {
-        boolean isRead = false;
-        boolean isWrite = true;
-
-        // FOR STEP 4
-        // ========================================================================================== //
-        try
-        {
-            // Testing symbol-table-block tracking
-            if (isInIF && !isInELSE)
-            {
-                String label = "IF-WRITE";
-
-                // ---------------------------------- //
-                String expression = ctx.id_list().getText();
-                boolean isCondition = false;
-
-                boolean tmp = false;
-                if(isBegIF)
-                {
-                    tmp = true;
-                }
-
-                addExpression(label, isCondition, expression, tmp, isRead, isWrite);
-                // ---------------------------------- //
-            }
-            if (isInELSE && !isInIF)
-            {
-                String label = "ELSE-WRITE";
-
-                // ---------------------------------- //
-                String expression = ctx.id_list().getText();
-                boolean isCondition = false;
-
-                boolean tmp = false;
-                if(isBegELSE)
-                {
-                    tmp = true;
-                }
-
-                addExpression(label, isCondition, expression, tmp, isRead, isWrite);
-                // ---------------------------------- //
-            }
-            if (isInIF && isInELSE)
-            {
-                String label = "ELSE-WRITE";
-
-                // ---------------------------------- //
-                String expression = ctx.id_list().getText();
-                boolean isCondition = false;
-
-                boolean tmp = false;
-                if(isBegELSE)
-                {
-                    tmp = true;
-                }
-
-                addExpression(label, isCondition, expression, tmp, isRead, isWrite);
-                // ---------------------------------- //
-            }
-            if (isInWHILE && !isInIF && !isInELSE)
-            {
-                String label = "WHILE-WRITE";
-                //String label = currentSymbolTableName;
-
-                // ---------------------------------- //
-                String expression = ctx.id_list().getText();
-                boolean isCondition = false;
-
-                boolean tmp = false;
-                if(isBegWHILE)
-                {
-                    tmp = true;
-                }
-
-                addExpression(label, isCondition, expression, tmp, isRead, isWrite);
-                // ---------------------------------- //
-            }
-            if (isInFUNCTION && !isInWHILE && !isInIF && !isInELSE)
-            {
-                String label = "MAIN-WRITE";
-
-                // ---------------------------------- //
-                String expression = ctx.id_list().getText();
-                boolean isCondition = false;
-
-                boolean tmp = false;
-                if(isBegFUNC)
-                {
-                    tmp = true;
-                }
-
-                addExpression(label, isCondition, expression, tmp, isRead, isWrite);
-                // ---------------------------------- //
-            }
-        }
-        catch (Exception e)
-        {
-            // Uncomment if you have to debug it
-            //System.out.printf("var-name is: %s\n", e.getMessage());
-        }
-        // ========================================================================================== //
-    }
+    @Override public void enterWrite_stmt(MicroGrammarParser.Write_stmtContext ctx) { }
     /**
      * {@inheritDoc}
      *
@@ -1058,13 +678,6 @@ public class MicroListener extends MicroGrammarBaseListener
      */
     @Override public void enterIf_stmt(MicroGrammarParser.If_stmtContext ctx)
     {
-        this.isInIF = true;
-
-        this.isBegIF = true;
-        this.isBegELSE = true;
-        this.isBegWHILE = false;
-        this.isBegFUNC = false;
-
         String stmt = null;
 
         // try-catch for IF
@@ -1080,40 +693,12 @@ public class MicroListener extends MicroGrammarBaseListener
 
         if (stmt != null)
         {
-            blockCount++;
             String symbolTableName = "Symbol table BLOCK " + blockCount;
             currentSymbolTableName = symbolTableName;
-
-            // FOR STEP 4
-            // ---------------------------------------------------------------------------- //
-            Statement statementObj = null;
-            String lable = stmt;
-
-            // Getting IF condition
-            try
-            {
-                // Get condition
-                String condition = ctx.cond().getText();
-                boolean isCondition = true;
-                boolean isBeginningOfBlock = true;
-
-                // Building statement object for current symbol-table
-                statementObj = new Statement(currentSymbolTableName ,lable, isCondition, condition, isBeginningOfBlock);
-            }
-            catch (Exception e)
-            {
-                // Uncomment if you have to debug it
-                //System.out.printf("var-name is: %s\n", e.getMessage());
-            }
-            // ---------------------------------------------------------------------------- //
-
-            MicroSymbolTable mstTMP = new MicroSymbolTable(lable, symbolTableName, blockCount, false);
-            mstTMP.setStatementObj(statementObj);
-
-            symbolTable.put(new Integer(elementCount), mstTMP);
+            symbolTable.put(new Integer(elementCount), new MicroSymbolTable(symbolTableName));
 
             //System.out.printf("\nSymbol table BLOCK %d\n", blockCount);
-            //blockCount++;
+            blockCount++;
             elementCount++;
         }
     }
@@ -1122,20 +707,7 @@ public class MicroListener extends MicroGrammarBaseListener
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitIf_stmt(MicroGrammarParser.If_stmtContext ctx)
-    {
-        this.isInIF = false;
-
-        this.isEndIF = true;
-
-        this.isBegIF = false;
-        this.isBegELSE = true;
-
-        MicroSymbolTable mstTMP = new MicroSymbolTable("EXIT-IF", "EXIT-IF", blockCount, false);
-
-        symbolTable.put(new Integer(elementCount), mstTMP);
-        elementCount++;
-    }
+    @Override public void exitIf_stmt(MicroGrammarParser.If_stmtContext ctx) { }
     /**
      * {@inheritDoc}
      *
@@ -1143,13 +715,6 @@ public class MicroListener extends MicroGrammarBaseListener
      */
     @Override public void enterElse_part(MicroGrammarParser.Else_partContext ctx)
     {
-        this.isInELSE = true;
-
-        this.isBegELSE = true;
-        this.isBegIF = false;
-        this.isBegWHILE = false;
-        this.isBegFUNC = false;
-
         String stmt = null;
 
         // try-catch for ELSE
@@ -1165,17 +730,12 @@ public class MicroListener extends MicroGrammarBaseListener
 
         if (stmt != null)
         {
-            blockCount++;
             String symbolTableName = "Symbol table BLOCK " + blockCount;
             currentSymbolTableName = symbolTableName;
-
-            String label = stmt;
-            MicroSymbolTable mstTMP = new MicroSymbolTable(label, symbolTableName, blockCount, false);
-
-            symbolTable.put(new Integer(elementCount), mstTMP);
+            symbolTable.put(new Integer(elementCount), new MicroSymbolTable(symbolTableName));
 
             //System.out.printf("\nSymbol table BLOCK %d\n", blockCount);
-            //blockCount++;
+            blockCount++;
             elementCount++;
         }
     }
@@ -1184,19 +744,7 @@ public class MicroListener extends MicroGrammarBaseListener
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitElse_part(MicroGrammarParser.Else_partContext ctx)
-    {
-        this.isInELSE = false;
-
-        this.isEndELSE = true;
-
-        this.isBegELSE = false;
-        this.isBegIF = false;
-
-        MicroSymbolTable mstTMP = new MicroSymbolTable("EXIT-ELSE", "EXIT-ELSE", blockCount, false);
-        symbolTable.put(new Integer(elementCount), mstTMP);
-        elementCount++;
-    }
+    @Override public void exitElse_part(MicroGrammarParser.Else_partContext ctx) { }
     /**
      * {@inheritDoc}
      *
@@ -1228,13 +776,6 @@ public class MicroListener extends MicroGrammarBaseListener
      */
     @Override public void enterWhile_stmt(MicroGrammarParser.While_stmtContext ctx)
     {
-        this.isInWHILE = true;
-
-        this.isBegWHILE = true;
-        this.isBegIF = false;
-        this.isBegELSE = false;
-        this.isBegFUNC = false;
-
         String stmt = null;
 
         // try-catch for WHILE
@@ -1250,39 +791,12 @@ public class MicroListener extends MicroGrammarBaseListener
 
         if (stmt != null)
         {
-            blockCount++;
             String symbolTableName = "Symbol table BLOCK " + blockCount;
             currentSymbolTableName = symbolTableName;
-
-            // FOR STEP 4
-            // ---------------------------------------------------------------------------- //
-            Statement statementObj = null;
-            String lable = stmt;
-
-            // Getting WHILE condition
-            try
-            {
-                // Get condition
-                String condition = ctx.cond().getText();
-                boolean isCondition = true;
-                boolean isBeginningOfBlock = true;
-
-                // Building statement object for current symbol-table
-                statementObj = new Statement(currentSymbolTableName, lable, isCondition, condition, isBeginningOfBlock);
-            }
-            catch (Exception e)
-            {
-                // Uncomment if you have to debug it
-                //System.out.printf("var-name is: %s\n", e.getMessage());
-            }
-            // ---------------------------------------------------------------------------- //
-            MicroSymbolTable mstTMP = new MicroSymbolTable(lable, symbolTableName, blockCount, false);
-            mstTMP.setStatementObj(statementObj);
-
-            symbolTable.put(new Integer(elementCount), mstTMP);
+            symbolTable.put(new Integer(elementCount), new MicroSymbolTable(symbolTableName));
 
             //System.out.printf("\nSymbol table BLOCK %d\n", blockCount);
-            //blockCount++;
+            blockCount++;
             elementCount++;
         }
     }
@@ -1291,16 +805,7 @@ public class MicroListener extends MicroGrammarBaseListener
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitWhile_stmt(MicroGrammarParser.While_stmtContext ctx)
-    {
-        this.isInWHILE = false;
-        this.isEndWHILE = true;
-
-        MicroSymbolTable mstTMP = new MicroSymbolTable("EXIT-WHILE", "EXIT-WHILE", blockCount, false);
-
-        symbolTable.put(new Integer(elementCount), mstTMP);
-        elementCount++;
-    }
+    @Override public void exitWhile_stmt(MicroGrammarParser.While_stmtContext ctx) { }
     /**
      * {@inheritDoc}
      *

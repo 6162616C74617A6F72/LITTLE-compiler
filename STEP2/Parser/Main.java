@@ -9,33 +9,73 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-public class MicroTokenizer
+public class Main
 {
-    // Path to the .micro file
-    private URL res = null;
-
-    // For recognition of tokens
-    private CustomToken customToken = new CustomToken();
+    private static CustomToken customToken = new CustomToken();
 
     /**
-     *
-     * @param res: URL type
+     * mmain function should accept one argument witch is file name of .micro
+     * @param args: String
      */
-    public MicroTokenizer(URL res)
+    public static void main(String[] args)
     {
-        this.res = res;
+        String fileName = null;
+        String path = null;
+        String filePath = null;
+
+        // Get absolute path of the running Main.class
+        Path currentDir = Paths.get(".");
+        path = currentDir.toAbsolutePath().toString();
+
+        // Initialize URL
+        URL res = null;
+
+        if(args[0] != null)
+        {
+            // Combine "absolute path of the running Main.class" and "file name"
+            fileName = args[0];
+            filePath = path + "/" + fileName;
+
+            try
+            {
+                // Get resource from the file path
+                res = Paths.get(filePath).toUri().toURL();
+
+                // Run Tokenizer
+                // IT IS STEP 1
+                //===========================================================================================//
+                //run(res);
+                //===========================================================================================//
+
+                // Initialize and run parser
+                // IT IS STEP 2
+                //===========================================================================================//
+                MicroParser microParser = new MicroParser();
+                microParser.run(res);
+                //===========================================================================================//
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        else
+        {
+            System.out.printf("You did not provide complete file name!\n");
+        }
     }
 
     /**
-     *  Run Tokenizer
+     *  Tokenizer
+     * @param res: URL
      * @throws IOException
      */
-    public void run() throws IOException
+    public static void run(URL res) throws IOException
     {
         /*In the final application file name should be provided via command line*/
 
@@ -117,7 +157,7 @@ public class MicroTokenizer
         }
     }
 
-    public String[] addSpace(String[] splited)
+    public static String[] addSpace(String[] splited)
     {
         String[] newSplited = null;
         String str = "";
@@ -225,7 +265,7 @@ public class MicroTokenizer
         return newSplited;
     }
 
-    public boolean isComment(String inputLine)
+    public static boolean isComment(String inputLine)
     {
         boolean comment = false;
 
@@ -249,7 +289,7 @@ public class MicroTokenizer
 
     // This function is used for cleaning up line from comment
     // when comment is behind of statement blocks
-    public String[] extraComment(String[] splited)
+    public static String[] extraComment(String[] splited)
     {
         String[] newSplited = null;
         int index = -1;
@@ -297,7 +337,7 @@ public class MicroTokenizer
         return newSplited;
     }
 
-    public String[] strLiteral(String inputLine, String[] splited)
+    public static String[] strLiteral(String inputLine, String[] splited)
     {
         boolean isStrLiteral = false;
 
@@ -400,6 +440,31 @@ public class MicroTokenizer
                     //System.out.printf("%s", e.getMessage());
                     tmp = null;
                 }
+
+                /*
+                // string_decl: STRING id ':=' str ';';
+                // max is [5]
+                tmp = new String[5];
+                // Build new splited line
+                for(int i = 0; i < splited.length; i++)
+                {
+                    if(!splited[i].equals(null))
+                    {
+                        if(!splited[i].equals(""))
+                        {
+                            tmp[0] = splited[i];   // KEYWORD
+                            tmp[1] = splited[i+1]; // id
+                            tmp[2] = splited[i+2]; // OPERATOR
+                            break;
+                        }
+                    }
+                }
+                tmp[3] = strArr[0]; // str
+                tmp[4] = strArr[1]; // OPERATOR
+
+                splited = null;
+                splited = tmp;
+                */
             }
             //=================================================================================//
 
@@ -412,7 +477,7 @@ public class MicroTokenizer
     }
 
     // Building "Token Type" and its "Value"
-    public void output(MicroGrammarParser parser)
+    public static void output(MicroGrammarParser parser)
     {
         // Get token text which is token name
         String tokenValue = parser.getCurrentToken().getText();
@@ -438,9 +503,9 @@ public class MicroTokenizer
         if(tokenTypeNum != -1)
         {
             /*
-             * Token Type: KEYWORD
-             * Value: PROGRAM
-             */
+            * Token Type: KEYWORD
+            * Value: PROGRAM
+            */
 
             System.out.printf("Token Type: %s\nValue: %s\n", tokenType, tokenValue);
         }

@@ -59,16 +59,10 @@ public class Driver
                 // Building symbol table
                 // IT IS STEP 3
                 //===========================================================================================//
-                //DriverSymbolTable driverSymbolTable = new DriverSymbolTable(res);
-                //driverSymbolTable.run();
-                //===========================================================================================//
-
-                // Building symbol table
-                // IT IS STEP 3, IS ALSO FOR PART 4
-                //===========================================================================================//
                 DriverSymbolTable driverSymbolTable = new DriverSymbolTable(res);
                 driverSymbolTable.run();
                 //===========================================================================================//
+
             }
             catch (IOException e)
             {
