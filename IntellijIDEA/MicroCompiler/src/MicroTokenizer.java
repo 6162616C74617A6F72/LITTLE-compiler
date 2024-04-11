@@ -4,7 +4,8 @@
  * @author Olexandr Matveyev
  */
 
-/*ANTLR4 libs import */
+
+import io.github.pixee.security.BoundedLineReader;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -46,7 +47,7 @@ public class MicroTokenizer
         BufferedReader br = new BufferedReader(new InputStreamReader(res.openStream()));
         String inputString;
 
-        while ((inputString = br.readLine()) != null)
+        while ((inputString = BoundedLineReader.readLine(br, 5_000_000)) != null)
         {
             // Remove all white spaces for input line to identify if input line is comment
             //===================================================================================//
