@@ -100,7 +100,7 @@ public class MicroTokenizer
                 {
                     if(!splited[i].equals(null))
                     {
-                        if(!splited[i].equals(""))
+                        if(!"".equals(splited[i]))
                         {
                             // get char steam from the input line
                             inp = CharStreams.fromString(splited[i]);
@@ -281,7 +281,7 @@ public class MicroTokenizer
             {
                 if(splited[i] != null)
                 {
-                    if(!splited[i].equals(""))
+                    if(!"".equals(splited[i]))
                     {
                         newSplited[k] = splited[i];
                         k++;
@@ -308,7 +308,7 @@ public class MicroTokenizer
             if(!splited[i].equals(null))
             {
                 // Checking if input li ne is STRINGLITERAL
-                if(splited[i].equals("STRING"))
+                if("STRING".equals(splited[i]))
                 {
                     isStrLiteral = true;
                     break;
@@ -380,7 +380,7 @@ public class MicroTokenizer
                     {
                         if(!splited[i].equals(null))
                         {
-                            if(!splited[i].equals(""))
+                            if(!"".equals(splited[i]))
                             {
                                 tmp[0] = splited[i];   // KEYWORD
                                 tmp[1] = splited[i+1]; // id

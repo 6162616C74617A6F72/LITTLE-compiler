@@ -273,11 +273,11 @@ public class GenerateStatement
         }
         // ------------------------------------------------------------------------------------------ //
 
-        if (lType.equals("INT") && rType.equals("INT"))
+        if ("INT".equals(lType) && "INT".equals(rType))
         {
             compStmt = "cmpi";
         }
-        else if (lType.equals("FLOAT") && rType.equals("FLOAT"))
+        else if ("FLOAT".equals(lType) && "FLOAT".equals(rType))
         {
             compStmt = "cmpr";
         }
@@ -328,17 +328,17 @@ public class GenerateStatement
         for (int i = 0; i < stmt.length; i++)
         {
             // We have to in the first place compute expression between brackets
-            if (stmt[i].equals("(") || stmt[i].equals(")"))
+            if ("(".equals(stmt[i]) || ")".equals(stmt[i]))
             {
                 String tmp = "";
                 // We have to identify beginning of the expression
                 // between brackets
-                if (stmt[i].equals("("))
+                if ("(".equals(stmt[i]))
                 {
                     indexStart = i + 1;
                     subExpr = true;
                 }
-                if (stmt[i].equals(")"))
+                if (")".equals(stmt[i]))
                 {
                     indexEnd = i;
                     subExpr = false;
@@ -590,17 +590,17 @@ public class GenerateStatement
         for (int i = 0; i < stmt.length; i++)
         {
             // We have to in the first place compute expression between brackets
-            if (stmt[i].equals("(") || stmt[i].equals(")"))
+            if ("(".equals(stmt[i]) || ")".equals(stmt[i]))
             {
                 String tmp = "";
                 // We have to identify beginning of the expression
                 // between brackets
-                if (stmt[i].equals("("))
+                if ("(".equals(stmt[i]))
                 {
                     indexStart = i + 1;
                     subExpr = true;
                 }
-                if (stmt[i].equals(")"))
+                if (")".equals(stmt[i]))
                 {
                     indexEnd = i;
                     subExpr = false;
@@ -675,7 +675,7 @@ public class GenerateStatement
         for (int i = 0; i < stmt.length; i++)
         {
             String arithmeticSymbol = null;
-            if (stmt[i].equals("*") || stmt[i].equals("/"))
+            if ("*".equals(stmt[i]) || "/".equals(stmt[i]))
             {
                 // Just local variables
                 // ------------------------------------------------------------------------ //
@@ -692,13 +692,13 @@ public class GenerateStatement
                 // I am looking one-symbol behind and one-symbol ahead for [*] and [/]
                 // in order to get its children variables
                 // ------------------------------------------------------------------------ //
-                if (stmt[i].equals("*"))
+                if ("*".equals(stmt[i]))
                 {
                     id1 = stmt[i - 1];
                     id2 = stmt[i + 1];
                     arithmeticSymbol = "*";
                 }
-                else if (stmt[i].equals("/"))
+                else if ("/".equals(stmt[i]))
                 {
                     id1 = stmt[i - 1];
                     id2 = stmt[i + 1];
@@ -783,7 +783,7 @@ public class GenerateStatement
         for (int i = 0; i < stmt.length; i++)
         {
             String arithmeticSymbol = null;
-            if (stmt[i].equals("+") || stmt[i].equals("-"))
+            if ("+".equals(stmt[i]) || "-".equals(stmt[i]))
             {
                 // Just local variables
                 // ------------------------------------------------------------------------ //
@@ -800,13 +800,13 @@ public class GenerateStatement
                 // I am looking one-symbol behind and one-symbol ahead for [*] and [/]
                 // in order to get its children variables
                 // ------------------------------------------------------------------------ //
-                if (stmt[i].equals("+"))
+                if ("+".equals(stmt[i]))
                 {
                     id1 = stmt[i - 1];
                     id2 = stmt[i + 1];
                     arithmeticSymbol = "+";
                 }
-                else if (stmt[i].equals("-"))
+                else if ("-".equals(stmt[i]))
                 {
                     id1 = stmt[i - 1];
                     id2 = stmt[i + 1];
@@ -919,7 +919,7 @@ public class GenerateStatement
                     // Loop via all symbols to find match
                     for (int k = 0; k < symbols.length; k++)
                     {
-                        if (stmt[j].equals(symbols[k]) || stmt[j].equals("\n"))
+                        if (stmt[j].equals(symbols[k]) || "\n".equals(stmt[j]))
                         {
                             endIndex = j - 1;
                             stop = true;
@@ -957,9 +957,9 @@ public class GenerateStatement
             while ( i < stmt.length )
             {
                 if (
-                        stmt[i].equals("+") || stmt[i].equals("-") ||
-                                stmt[i].equals("*") || stmt[i].equals("/") ||
-                                stmt[i].equals("(") || stmt[i].equals(")")
+                        "+".equals(stmt[i]) || "-".equals(stmt[i]) ||
+                                "*".equals(stmt[i]) || "/".equals(stmt[i]) ||
+                                "(".equals(stmt[i]) || ")".equals(stmt[i])
                 )
                 {
                     break;
@@ -1006,7 +1006,7 @@ public class GenerateStatement
         {
             if (stmt[i] != null)
             {
-                if (!stmt[i].equals("") && !stmt[i].equals("\n"))
+                if (!"".equals(stmt[i]) && !"\n".equals(stmt[i]))
                 {
                     newSize++;
                 }
@@ -1019,7 +1019,7 @@ public class GenerateStatement
         {
             if (stmt[i] != null)
             {
-                if (!stmt[i].equals("") && !stmt[i].equals("\n"))
+                if (!"".equals(stmt[i]) && !"\n".equals(stmt[i]))
                 {
                     output[count] = stmt[i];
                     count++;
@@ -1063,11 +1063,11 @@ public class GenerateStatement
         }
 
         // Getting compare label name in the form of Tiny code
-        if (lType.equals("INT") && rType.equals("INT"))
+        if ("INT".equals(lType) && "INT".equals(rType))
         {
             compStmt = "cmpi";
         }
-        else if (lType.equals("FLOAT") && rType.equals("FLOAT"))
+        else if ("FLOAT".equals(lType) && "FLOAT".equals(rType))
         {
             compStmt = "cmpr";
         }

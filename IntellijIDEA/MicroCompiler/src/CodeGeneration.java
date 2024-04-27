@@ -240,9 +240,9 @@ public class CodeGeneration
     {
         // Print labels or block names
         // ---------------------------------------------------------------------------- //
-        if (!lable.equals("GLOBAL") && !isCondition)
+        if (!"GLOBAL".equals(lable) && !isCondition)
         {
-            if (!lable.equals("EXIT-IF") && !lable.equals("EXIT-ELSE"))
+            if (!"EXIT-IF".equals(lable) && !"EXIT-ELSE".equals(lable))
             {
                 if (isFunction)
                 {
@@ -264,7 +264,7 @@ public class CodeGeneration
 
         // IF
         // ---------------------------------------------------------------------------- //
-        if (lable.equals("IF") && isCondition)
+        if ("IF".equals(lable) && isCondition)
         {
             String condStnt = statement;
 
@@ -333,7 +333,7 @@ public class CodeGeneration
 
         // EXIT-IF
         // ---------------------------------------------------------------------------- //
-        if (lable.equals("EXIT-IF") && !isCondition)
+        if ("EXIT-IF".equals(lable) && !isCondition)
         {
             //System.out.printf("%s\n", "EXIT-IF");
 
@@ -406,7 +406,7 @@ public class CodeGeneration
 
         // ELSE
         // ---------------------------------------------------------------------------- //
-        if (lable.equals("ELSE") && !isCondition)
+        if ("ELSE".equals(lable) && !isCondition)
         {
             // print from stack
             if (labelsIfElse != null)
@@ -469,7 +469,7 @@ public class CodeGeneration
 
         // EXIT-ELSE
         // ---------------------------------------------------------------------------- //
-        if (lable.equals("EXIT-ELSE") && !isCondition)
+        if ("EXIT-ELSE".equals(lable) && !isCondition)
         {
             //System.out.printf("%s\n", "EXIT-ELSE");
         }
@@ -477,7 +477,7 @@ public class CodeGeneration
 
         // WHILE
         // ---------------------------------------------------------------------------- //
-        if (lable.equals("WHILE") && isCondition)
+        if ("WHILE".equals(lable) && isCondition)
         {
             String condStnt = statement;
 
